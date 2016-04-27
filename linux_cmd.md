@@ -3,7 +3,7 @@
 ## ifconfig
     
     ifconfig
-    //查看网卡情况（ip）
+    // 查看网卡情况（ip）
     
 ---
 
