@@ -75,5 +75,135 @@
 ## mv
 
 	mv /source/file/or/dir /to/dir
-	//剪切 或 更名	
+	//剪切 或 更名
 
+## rm
+
+	rm file
+	// 删除文件
+---
+
+	rm -r /dir
+	// -r 删除目录
+---
+
+	rm -rf /not/empty/dir
+	// -f 强制删	
+	
+## touch
+
+	touch newfile.txt
+	// 创建文件
+---
+
+	touch "programe files"
+	// 特殊命名要带引号，不建议
+
+## cat
+
+	cat -n /to/watch/this/file
+	// 查看文件内容
+	// -n 带行号
+
+## more
+
+	more /to/watch
+	// 查看文件， 空格-翻页， 回车-下一行，q-退出
+
+## less
+
+	//查看文件， 可以往回翻
+	//可以搜索关键词，输入斜杠搜索关键字
+	
+## head
+	
+	head -n 3 file.txt
+	// 查看文件前三行
+
+## tail
+	
+	tail -n 3 file.txt
+	// 查看文件后三行
+	
+	tail -f file.txt
+	// -f 动态显示文件末尾
+
+## ln
+
+	ln -s /src/file  //hard.link
+	// 生成硬链接
+---
+
+	ln -s /src/file  /soft.link
+	// 生成软链接
+---
+
+## chmod
+
+> change ... mode of permission 更改权限
+
+	chmod u+r /target/file
+	
+	// u-表示所有者，还可以是 g-所属组, o-其他
+	// '+' 表示添加权限，还可以是 '-' 或 '='
+	// r 是 rwx 中的一个
+	/*
+		权限		对文件				对目录
+		------------------------------
+	r	读		查看文件内容		列出目录中的内容
+	w	写		修改文件内容		目录中创建、删除文件
+	x	执行		执行文件			可以进入目录
+	
+	*/
+---
+
+	chmode -R 777 /target/dir
+	
+	// r:4, w:2, x:1, rwxrw-r--:764
+	// -R 表示递归，不加则默认只会改变目录本身权限
+
+## chown
+
+> change file onwership 改变文件所有者， root 用户才可以
+
+	change newowner /target
+	// 改变 /target 的所有者为 newowner
+
+
+## chgrp
+
+> change file group ... 改变文件的所有组，文件所有者才可以
+
+## umask
+
+> the user file-creation mask 新建文件的缺省权限
+> 
+> ps: 无论怎么设置，新建文件是没有 x 权限的，目录可以有
+
+	umask -S
+	
+	//用 rwx 形式显示...
+---
+
+	umask 023
+	
+	// 设置为 rwxr-xr--
+	/*
+	需求：设置为 rwxr-xr--
+	1）换算为 754
+	2）777 - 754 = 023
+	3）输入 023（掩码）
+	*/
+	
+
+
+
+
+
+
+
+
+
+
+
+	
