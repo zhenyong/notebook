@@ -196,14 +196,87 @@
 	*/
 	
 
+## find
+> 扫描硬盘，插在文件
+
+	find /search/from/dir -name ?key*
+	
+	// -name 表示按名称搜索
+	// -iname 不区分大小写
+	// ? 表示单个字符， * 表示任意个 
+---
+
+	find /dir -size 204800
+	
+	// -size 按大小搜索，单位是数据块 (512字节)
+	// -size +10 表示大于 10个数据块
+	// -size -10 表示小于 10哥数据块
+---
+
+	find /dir -user username
+	
+	// -user 根据所有者
+	// -group 根据所属组
+---
 
 
+	find /dir -cnmin -5
+	
+	// 搜索5分钟内文件属性属性被修改过的
+	// -amin 访问时间(access)
+	// -cmin 文件属性(change)
+	// -mmin 文件内容(modify)	
+	// +5 表示超过5分钟
+---
+
+	find /dir -size +10 -a -size -100
+	
+	// -a 表示条件并
+	// -o 表示条件或
+---
+
+	find /dir -type f
+	
+	// -type 表示根据文件类型查找
+	// f:文件  d:目录  l:软链接
+---
+
+	find -inum 32112
+	
+	// 根据文件 i 节点查找
+	// hack: 可以找硬链接
+---
+
+	find ./ -name notebook -exec ls -l {} \;
+	
+	// 对查询结果执行命令
 
 
+## locate
+> 在文件资料库中查找文件，不是扫描硬盘，资料库不包含某些目录（/tmp）
+
+	updatedb
+	// 更新文件资料库
+---
+
+## which
+> 搜索命令所在的目录和别名信息
+
+## whereis
+> 搜索命令所在的目录和帮助文档路径
+
+## grep
+> 关键词逐行搜索文件内容
+
+	grep -i keyword file.txt
+	
+	// -i 不区分大小写
+	// -v 『排除关键词』搜索
 
 
+	
 
-
+	
 
 
 	
