@@ -318,6 +318,86 @@
 	// which cd 
 	// cd: shell built-in command
 
+## useradd
+> 添加用户
+
+	useradd peter
+---
+
+## passwd
+>  为用户设置密码
+
+	passwd peter
+	
+	// 用 peter 设置密码
+
+## who
+> 查看当前登陆的用户们
+
+	➜  ~ who
+	root     pts/0        2016-04-28 04:23 (183.237.64.198)
+	peter    pts/1        2016-04-28 05:29 (183.237.64.198)
+	// pts：远程终端登录   tty:本地终端登
+
+## w
+> 查看谁登录以及 uptime 信息
+
+## uptime
+> 系统运行摘要
+
+## gzip
+> GUN zip, 压缩为 .gz，
+
+	gzip srcfile
+	
+	// 只能压缩文件（windows压啥都行）
+	// 不保留源文件
+
+## gunzip
+> 解压缩
+
+## tar
+> 打包压缩 / 解包解压
+
+	tar -cvf result.tar /src/sth
+	
+	// -c 打包, 可以是目录（通常后缀为 .tar）
+	// -v 显示详情
+	// -f 指定结果名
+	// -z 打包同时使用zip压缩（通常后缀为 .tar.gz）
+	// -j 打包同时使用bzip压缩（通常后缀为 .tar.bz2）
+---
+
+	tar -xvfz result.tar.gz
+	
+	// -x 解包
+	// -f 指定文件
+	// -z gzip 解压
+	// -j bz2 解压
+	// -v 显示详情
+---
+
+## zip
+> 压缩为 .zip, 文件/目录，保留原文件
+
+	zip -r result.zip /src/dir
+	
+	// -r 目录
+---
+
+## unzip
+> 解压缩
+
+## bzip2
+> gzip压缩升级版， 后缀通常为 .bz2
+
+	bzip2 -k /src/any
+	
+	// -k 保留原文件
+	
+	
+	
+	
 
 	
 
