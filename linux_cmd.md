@@ -1,15 +1,5 @@
 > CentOS 7.x
 
-## ifconfig
-    
-    ifconfig
-    // 查看网卡情况（ip）
-    
----
-
-    ifconfig et0 192.x.x.x
-    //设置设备临时ip（重启后无效）
-
 ## df
 	
 	df
@@ -23,7 +13,7 @@
 	firewall-cmd --reload
 	//打开端口
 
-
+# 文件处理
 
 ## ls
 
@@ -138,6 +128,17 @@
 	// 生成软链接
 ---
 
+## mount
+> 挂载
+
+	mount -t iso9660 /dev/src0 /mnt/mount
+	
+	// 设备/dev/src0 挂到 /mnt/mount
+	// -t 指定文件系统
+---
+
+# 权限管理
+
 ## chmod
 
 > change ... mode of permission 更改权限
@@ -194,7 +195,8 @@
 	2）777 - 754 = 023
 	3）输入 023（掩码）
 	*/
-	
+
+# 文件搜索
 
 ## find
 > 扫描硬盘，插在文件
@@ -273,6 +275,8 @@
 	// -i 不区分大小写
 	// -v 『排除关键词』搜索
 
+# 帮助
+
 ## man
 > 查看命令的帮助信息，查看配置文件的帮助信息
 
@@ -318,6 +322,9 @@
 	// which cd 
 	// cd: shell built-in command
 
+
+# 用户管理
+
 ## useradd
 > 添加用户
 
@@ -344,6 +351,8 @@
 
 ## uptime
 > 系统运行摘要
+
+# 压缩
 
 ## gzip
 > GUN zip, 压缩为 .gz，
@@ -394,14 +403,77 @@
 	bzip2 -k /src/any
 	
 	// -k 保留原文件
+---
+
+# 网络
+
+## write
+> 古老的向用户发信息
+
+	write username
+	> blablabla
+	> ctrl+d 保存发送
+---
+
+## wall
+> 广播
 	
+## ping
+> 测试网络连通性
 	
+	ping -c 10 192.168.1.1
 	
+	// -c 发送次数
+---
+
+## ifconfig
+> interface configure
+
+    ifconfig
+    // 查看网卡情况（ip）
+    
+---
+
+    ifconfig et0 192.x.x.x
+    //设置设备临时ip（重启后无效）
+
+## last
+> 列出目前和过去每次登录的信息
+
+## lastlog
+> 列出所有用户最后一次登录
+
+	lastlog -u nameorid
 	
+	// -u 指定查看某个用户
+
+## traceroute
+> 探测到达主机间的路径
+	
+## netstat
+> 显示网络相关信息
+
+	// -t TCP协议
+	// -u UDP协议
+	// -l 监听
+	// -r 路由
+	// -n 显示ip和端口
+---
+
+	netstat -tlun
+	// 查看本机监听的端口
+---
+
+	netstat -an
+	// 本机所有网络连接
+---
+	
+	netstat -rn
+	// 本机路由表
+
+## setup
+> redhat 系提供的图形配置网络
 
 	
-
 	
-
-
 	
