@@ -273,6 +273,51 @@
 	// -i 不区分大小写
 	// -v 『排除关键词』搜索
 
+## man
+> 查看命令的帮助信息，查看配置文件的帮助信息
+
+	man ls
+	
+	// 查看 ls 命令的帮助文档
+	// 空格:往下翻页，b:往上翻页
+	/*
+	 ➜  ~ whereis ls
+	ls: /usr/bin/ls /usr/share/man/man1/ls.1.gz
+	形如 /man/man1/xx.1.gz 这类带 『1』 的帮助文档都是命令相关
+	带 『5』 的则是配置文件的帮助文档
+	man 优先显示命令的帮助
+	*/
+---
+
+	man services
+	
+	// 查看 /etc/services 配置文件的帮助信息
+	// ps: man 后面的配置文件不需要带绝对路径
+	// 如果有同名的命令和配置文件，那么需要
+	// man 5 password 指定显示配置文件的帮助信息
+---
+	
+## whatis
+> 查询类似命令的简单描述
+
+	whatis ls
+	
+	// 显示所有带 ls 的命令的简要说明
+
+## apropos
+> 查询类似配置文件的简单描述
+
+## info
+> 跟 man 差不多，内容格式排版不一样
+
+## help
+> 查看内置命令（找不到路径的命令）的帮助
+
+	help cd
+	// cd 是内置命令
+	// which cd 
+	// cd: shell built-in command
+
 
 	
 
