@@ -1,6 +1,6 @@
 # 最初的模板解析&数据绑定
 
-> 参考这次提交：871ed91266 naive implementation
+> 参考这次提交：[a5e27b1174e9196dcc9dbb0becc487275ea2e84c](https://github.com/vuejs/vue/commit/a5e27b1174e9196dcc9dbb0becc487275ea2e84c)
 
 ## 代码解析
 
