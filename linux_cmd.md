@@ -7,11 +7,6 @@
 		
 ---
 
-## firewall-cmd
-
-	firewall-cmd --zone=public --add-port=22/tcp --permanent
-	firewall-cmd --reload
-	//打开端口
 
 # 文件处理
 
@@ -134,8 +129,11 @@
 	mount -t iso9660 /dev/src0 /mnt/mount
 	
 	// 设备/dev/src0 挂到 /mnt/mount
-	// -t 指定文件系统
+	// -t 指定文件系统 (如果是系统分配的设备名，通常不需要指定)
 ---
+
+## umount
+> 卸载挂载点
 
 # 权限管理
 
@@ -473,6 +471,13 @@
 
 ## setup
 > redhat 系提供的图形配置网络
+
+
+## firewall-cmd
+
+	firewall-cmd --zone=public --add-port=22/tcp --permanent
+	firewall-cmd --reload
+	//打开端口
 
 	
 	
