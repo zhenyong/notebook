@@ -110,10 +110,68 @@
 	
 	Seed.extend 返回组件类，通过原型链拷贝构造继承自父类 Seed
 
+get技能：
+
+经典的拷贝构造原型链继承，会出现下面这段
+	
+	var F = function () {};
+	F.prototype = Base.prototype
+	Sub.prototype = new F();
+	
+以上实现在现代浏览器中，一句搞掂
+
+	Sub.prototype = Object.create(Base.prototype);
+
 ## [952ab43]
 
 > kinda working now.
 
 重构让代码跑起来
 
+捋一下代码：
+
+### Seed (el, data)
+
+> 组件类：解析指令，设置指令的功能逻辑，初始化数据
+
+- `el` Dom : 根元素节点
+- `_bindings` {} : 绑定变量key、指令实例、元素、值...的关联映射
+- `scope` {} : 存放数据、方法，与外部通信
+- `_compileNode` () : 对每个指令构造指令实例，更新 `_bindings` 对象
+
+
+### filters.js
+
+> 存放注册的过滤器 
+
+
+`{}<filterName, filterFunc>`
+
+
+### directives.js
+
+> 存放注册的指令名称及所需的执行方法
+
+`{}<dirName, definition = dirFunc/dirObject>`
+
+当 dirObject 是，该对象的方法会赋予指令实例
+
+### Directive (def, attr, arg, key)
+
+> 指令类，一个实例对应一个属性
+
+- `attr` {} : {name:}
+- `arg` : sd-on-click 中的 'click'
+- `key` : sd-on-click
+- `_update` () : 对应 definition[#update方法]
+- `update` () : 绑定变量改变时，执行方法 = _update + applyFilters
+- `applyFilters` () : 更新dom文本前应用过滤器
+
+### watchArray
+
+> 某些指令的绑定值为数组，用于拦截具体数组的方法，管理监测变化
+
+### config
+
+> 用于配置属性前缀，默认 `sd`
 
