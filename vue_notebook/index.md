@@ -212,7 +212,15 @@ sd-on-* 指令的 update 相当于注册事件处理器，而这个处理器有�
 
 >  big refactor.. again
 
-大重构，有了 controller 概念，还没实现
+大重构
+
+### Seed
+
+暴露 Seed.controller, 返回的类 等同于 Seed.extend 的返回，
+
+### controller
+
+目前代码看，就是 Seed.extend，controller 的概念还要看后面代码
 
 ### Directive => Binding
 
@@ -222,13 +230,15 @@ sd-on-* 指令的 update 相当于注册事件处理器，而这个处理器有�
 - 增加 key 表达式校验，忽略不靠谱的指令
 - dirInstance对应arr => bindingInstance对应directiveName
 	
-	从代码上看，支持这种解析，但是例子里还么看到这么用
+	从代码上看，支持这种解析
 	
 		sd-dir="exp1, exp2"
 		// attr 为 {name:'sd-dir', expressions:[exp1, exp2]}
 		// Seed 内部构造两个 Binding 实例
 		// Binding ('dir', 'exp1')
 		// Binding ('dir', 'exp2')
+	
+	于是 `sd-on` 就可以支持多个事件了
 
 ### sd-each
 
@@ -259,6 +269,69 @@ delegateCheck 的三个条件判断表示：
 			el>div>a -- 代理这个元素	#3
 				el>div>a>button	#4
 
+# [62b75d4]
 
+> kinda work now except for scope nesting
 
+## Seed
+
+### scope chain
+
+		<li 
+	        sd-each="todo:todos"
+	        sd-on="click:changeMessage, click:todo.toggle"
+	        sd-text="todo.title"
+	    ></li>
+
+	每个 li 都有自己 scope 对于形如 `todo.xxx`, 如 `todo.title` 这个key，在绑定时，使用自身 scope， 对于 `changeMessage` 这种不带 `todo.` 的则用父 seed（的scope）
+
+### _createBinding 签名重构
+
+	seed._createBinding(key, targetScope)
+	 => 	
+ 	targetSeed._createBind(key)
+
+这就对了，把绑定的概念放在 seed 上，而不是直接关心 scope，况且 scope 就是 seed 的东西
+
+### controller 概念退化
+
+之前代码表现出 controller 是 Seed 的子类，现在不是了，controller 更像一堆纯行为方法，组件还是使用 Seed 去构造，只是在构造过程拷贝对应 controller 的方法，于是 Seed 对象具有了指定 ctrl 的行为方法
+
+### scope 初始化
+
+原先 scope 只拷贝绑定相关的用户数据，现在所有传进来的 data 都拷贝
+
+我想这样也是靠谱的，scope 的方法可能用到绑定无关的用户数据
+
+### _compileNode
+
+之前会深度遍历compile 各个节点，现在从 Seed 实例对应的根节点深度遍历时，如果遇到子节点带有 ctrl 声明则会跳过。
+
+我理解：compile 作一些绑定，是跟作用域 (scope)息 息相关，跳过嵌套 ctrl, 意味着作用域 从概念上看是通过 ctrl 层级来区分所要绑定的 scope （是哪个 Seed 对象）。
+
+疑问：目前例子里面，嵌套 ctrl 刚好作用在 sd-each，而 sd-each 遍历集合创建子 Seed 对象的时候会作绑定。那么，假如 嵌套 ctrl 不是作用在 sd-each 上则没机会作绑定，除非手动 new Seed，看后面代码吧
+
+## sd-on
+
+最初一个 dirInstance 可能管理多个事件处理器，改成 bindingInstance 之后，一个 binding 对象就只对应一个处理器
+
+## sd-each
+
+原来通过 sd-block 标志防止重复 compile, 现在是编译时移除指令属性，反正扫描不到就不会再编译了
+
+构建子 Seed 对象时，传递 parent Seed 而不是 parent Scope
+
+---
+
+*get技能*
+
+	// clone attributes because the list can change
+	var attrs = map.call(node.attributes, function (attr) {
+	    return {
+	        name: attr.name,
+	        expressions: attr.value.split(',')
+	    }
+	})
+
+之前没特别意识到，这段代码很重要，node.attributes 或者 length，每次访问都是实时的，所以通常要先拷贝一份
 
