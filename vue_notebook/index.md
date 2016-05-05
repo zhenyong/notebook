@@ -175,3 +175,90 @@ get技能：
 
 > 用于配置属性前缀，默认 `sd`
 
+## [3149839]
+
+> sd-each-* works
+
+### 重构:
+
+- 深度遍历根元素 compile 替代查找 compile，估计是考虑性能原因，因为选择器本质上也是一种遍历查找
+- 过滤器解析使用正则
+
+### 增加 sd-each-*：
+
+sd-each-* 元素下，根据数组的元素个数构建多个子组件，之后会把数组中对应的元素替换为组件的 scope
+
+只是实现了初始化构建，还没实现数组元素增删等监听处理
+
+### *get技能*
+
+	<div sd-on-click="changeMessage | delegate .button">
+
+代理子元素事件是通过过滤器实现
+
+	delegate: function (handler, args) {
+		// handler 就是绑定变量的值，即 changeMessage 方法
+        var selector = args[0]// '.button'
+        return function (e) {
+            if (e.target.webkitMatchesSelector(selector)) {
+                handler.apply(this, arguments)
+            }
+        }
+    }
+
+sd-on-* 指令的 update 相当于注册事件处理器，而这个处理器有可能经过 delegate 过滤器包装，酷~
+
+# [23a2bde]
+
+>  big refactor.. again
+
+大重构，有了 controller 概念，还没实现
+
+### Directive => Binding
+
+- 指令类的概念变为绑定类
+- key 的解析支持更多格式 （sd-class-red="error" => sd-class="red:error"）
+- arg 的解析变更： sd-xx-arg="key" => sd-xx="arg:key"
+- 增加 key 表达式校验，忽略不靠谱的指令
+- dirInstance对应arr => bindingInstance对应directiveName
+	
+	从代码上看，支持这种解析，但是例子里还么看到这么用
+	
+		sd-dir="exp1, exp2"
+		// attr 为 {name:'sd-dir', expressions:[exp1, exp2]}
+		// Seed 内部构造两个 Binding 实例
+		// Binding ('dir', 'exp1')
+		// Binding ('dir', 'exp2')
+
+### sd-each
+
+构建子组件时，如果有指定 sd-controller 则用它，否则构造一个 Seed 对象
+
+*get技能*
+
+	 if (delegateCheck(e.target, e.currentTarget, selector))
+	 	handler.apply(this, arguments)
+	
+	function delegateCheck (current, top, selector) {
+	    if (current.webkitMatchesSelector(selector)) {#3
+	        return true 
+	    } else if (current === top) {#1
+	        return false
+	    } else { #2 - 递归到外层事件元素 退出
+	    			#4 - 递归到代理目标 退出
+	        return delegateCheck(current.parentNode, top, selector)
+	    }
+	}
+	
+e.currentTarget 表示事件注册所在元素，e.target 表示真正触发事件的元素，可能是被代理的子元素。
+
+delegateCheck 的三个条件判断表示：
+
+	el -- 事件注册在这里 #1
+		el>div				#2
+			el>div>a -- 代理这个元素	#3
+				el>div>a>button	#4
+
+
+
+
