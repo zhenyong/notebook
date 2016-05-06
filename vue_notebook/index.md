@@ -335,3 +335,50 @@ delegateCheck 的三个条件判断表示：
 
 之前没特别意识到，这段代码很重要，node.attributes 或者 length，每次访问都是实时的，所以通常要先拷贝一份
 
+# [15ffaa4]
+
+> almost there! scope nesting
+
+小重构，变量命名更语义， 例如 seed => scopeOwner，不用看后面代码就知道这是 seed 是父 seed, 跟 scope 传递有关系
+
+
+#[08e7992]
+
+> finally workssssss
+
+compile 深度遍历，先解析子元素的指令（除了 sd-each）
+
+捋一下碰到 sd-each 时候的解析逻辑
+
+	<li class="todo"
+                    sd-controller="Todo"
+                    sd-each="todo:todos"
+                    sd-text="todo.title"
+
+
+        if (eachExp) { // each block
+            ...
+            解析 sd-each 绑定
+            ...
+            //下面是提前初始化
+            self.scope[binding.key] = self._dataCopy[binding.key]
+            delete self._dataCopy[binding.key]
+            }
+
+        } else if (!ctrlExp || root) { // normal node (non-controller)
+
+            //递归compile子元素
+
+				// 解析绑定其他 sd-*
+        }
+ 
+优先判断是否 sd-each, 处理完 sd-each 之后去除这个属属性，然后初始化，此时 sd-each 的 update 执行创建子 Seed, 子 Seed 执行自己的 compile 根节点逻辑，这时候，这个节点的其他 sd-* 进行解析绑定。
+
+疑惑：这个提前初始化是否必要？跟原来：等待所有 compile 完成后再初始化相比，提前初始化能让子 Seed 更早创建，除此之外，还没感受到注释说的
+	
+	// need to set each block now so it can inherit
+    // parent scope. i.e. the childSeeds must have been
+    // initiated when parent scope setters are invoked
+
+最近两次提交，还没感受到 scope chain 的机制怎么落实
+
