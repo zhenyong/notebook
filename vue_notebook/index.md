@@ -380,5 +380,90 @@ compile 深度遍历，先解析子元素的指令（除了 sd-each）
     // parent scope. i.e. the childSeeds must have been
     // initiated when parent scope setters are invoked
 
-最近两次提交，还没感受到 scope chain 的机制怎么落实
+通过最近两次提交，还没感受到 scope chain 的最终机制，涉及到嵌套 ctrl 的地方还没落实
+
+# [83665f9]
+
+> milestone reached, update todo
+
+记录todo，作者准备解决之前说到的内嵌 ctrl 如何 scope chain 的问题
+
+# [1d7a94e]
+
+> emitter
+
+make seedInstance emitter
+
+# [a6b7257]
+
+> todo demo kinda works
+
+## binding.js => directive-parser.js
+
+换回 Directive 类，囧~
+
+## directives
+
+- sd-on 的事件处理器包装一下，包装参数
+- 增加 sd-checked 绑定变量跟input元素checked值绑定
+
+## Seed
+
+- 是否遍历孩子，取决于 !eachExp && !ctrlExp
+
+---
+*get技能*
+
+多处重构体现了职责单一原则的开发思想，传递参数时不要多作包装，如果你的包装是为了对方，可能是你知道了对方的业务，那是越界了
+
+# [fcd9544]
+
+> awesome
+
+更新 sd-class
+
+- sd-class="filter" ， 如果scope.filter 为真则 class="filter"
+- sd-class="confidition:filter"，如果scope.confidition 为真则 class="filter"
+
+# [f1ed54b]
+
+> nested controllers
+
+## main
+
+- 通过 api={} 对象来暴露公共方法，比起 Seed 的静态方法更简洁
+- bootstrap：找到最外层 sd-controller 的元素，然后 new Seed
+- 嵌套的 ctrl 会 new Seed，终于解决之前的疑惑
+- 增加嵌套 ctrl 中访问父 Seed 的成员
+- sd-text
+	
+		<div sd-data="test"
+		Seed.data('test', { todos: todos })
+		
+	new Seed 的时候如果没有传 {data:xx} 则会去数据中心根据 sd-data 指定的 *test* 键值去获取数据
+
+
+有一些新的认识，帮助理解：
+
+- 指令: 从英文 directive 看，联想机器指令，一个指令就是做一件事情,对应带代码里的 update
+- 绑定：指令做事情，需要材料，一次绑定的过程就是要确定什么数据变化会引起什么指令执行，并且执行过程中的数据主体是谁
+
+# [14d0cef]
+
+> solved the setter init invoke
+
+### 初始化设置
+
+	this._binding = {
+		keyA: {
+			value: this.scope[keyA],
+			instances: [dirA, dirB]
+		}
+	}
+
+在绑定 key 和 某个 dir 时，会设置绑定对象的 value, 完成绑定关系之后，会使用这个值执行指令的 dir
+
+移除了原来在 Seed 构造最后会统一初始化 scope 的逻辑
+
+s
 
