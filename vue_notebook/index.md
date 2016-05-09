@@ -455,15 +455,29 @@ make seedInstance emitter
 ### 初始化设置
 
 	this._binding = {
+		//vvv 某个key的绑定对象
 		keyA: {
 			value: this.scope[keyA],
 			instances: [dirA, dirB]
 		}
+		//^^^ 
 	}
 
 在绑定 key 和 某个 dir 时，会设置绑定对象的 value, 完成绑定关系之后，会使用这个值执行指令的 dir
 
 移除了原来在 Seed 构造最后会统一初始化 scope 的逻辑
 
-s
+# [6d81bff]
+
+> better unbind/destroy
+
+- sd-each: 抽取 unbind 销毁逻辑
+- sd-on: 事件包装参数中传谁的 seed
+	
+	包装处理器时： `self.seed` => `e.currentTarget.seed`，概念上，传递事件绑定元素的 seed
+	
+	如果代理事件，则在过滤器指定代理元素的 seed `e.seed = target.seed`
+
+
+ 
 
