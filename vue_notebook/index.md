@@ -602,3 +602,28 @@ $ [5227248]
 
 > todo
 
+# [c1c0b3a]
+
+> thoughts
+
+# [9a4e5d0]
+
+> use emitters
+
+- sd-each中 array watch 的逻辑移到 seed 中，统一对数组值作拦截
+- 支持 value 动态，scope.key = {get: func}
+
+
+# [f6d6bba]
+
+> sourceURLs for dev, reverse value
+
+13年8月，貌似那会 gulp 有点火的苗头而已，呵呵
+
+# [67ff344]
+
+> add simple example & manual refresh of computed properties
+
+
+
+疑惑: refresh 和 update 除了后者多了保护返回，其他几乎一样，后续留意
