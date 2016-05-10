@@ -574,3 +574,31 @@ $ [5227248]
 
 > todos
 
+# [7d12612]
+
+> complete todo example
+
+- 增加 sd-value, 目测用来绑定 input 标签
+- 增加filter: `key`-过滤键盘键 `currency`
+- 初始值为 null/undefined 一样会调用 update
+
+到这次提交，todo demo 完成得差不多，总结捋一下整个开发过程：
+
+- 测试双向绑定核心机制
+- 基本的指令、过滤器机制
+- 重构、代码文件
+- scope chain
+- 处理 sd-each
+- array watch 机制
+- 计算依赖变量
+
+不断更新 TODO.md 的习惯，每一步都清楚目标，代码不多思考编码的时间不少，加油。
+
+# [19b3926]
+
+> jshint;
+
+# [f19e6c3]
+
+> todo
+
