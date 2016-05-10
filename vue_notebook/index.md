@@ -478,6 +478,99 @@ make seedInstance emitter
 	
 	如果代理事件，则在过滤器指定代理元素的 seed `e.seed = target.seed`
 
+# [8f79a10]
 
+> fix sd-on
  
+ 作者怀疑事件代理的真实性能，移除 delegate 过滤器。我个人也怀疑，除了像表格那类，代理每行dom这样的场景，其他的情况性能可以提高多少呢？别有限考虑性能也是对的，为了它除了很多细节问题，消耗时间，不过 delegate 过滤器的设计确实优雅巧妙。
+ 
+# [3d33458]
+
+> computed property progress
+
+- _compileNode 中条件优化，合并一些 if/else，考虑三类节点
+
+	+ sd-each
+	+ 非根部的ctrl
+	+ 其他节点（解析指令 & 递归）
+
+- 从表达式解析逻辑看出一点解析深层属性的逻辑
+
+$ [5227248]
+
+> event delegation in sd-each
+
+呵呵，刚说了就做了
+
+不过这里事件处理器还有很大重构空间
+
+# [ca62c95]
+
+> break directives into individual files
+
+重构指令代码结构，部分指令单独一个文件，可以扯一下开闭原则，^_^
+
+# [88513c0]
+
+> arrayWatcher
+
+`sd-each` 拦截数组修改方法，实现元素增删响应视图增删，不过 splice 的实现里面，定位 index 的计算公式有疑惑
+
+# [343ea29]
+
+> allow overwritting mutationHandlers
+
+# [c4f31a5]
+
+> better dep parsing
+
+重构，把key、filter 解析单独成方法
+
+# [5acc8a2]
+
+> computed properties!!!
+
+## 依赖绑定
+
+捋一下关系
+
+	<div sd-text="remaining < completed"
+	<div sd-text="completed"
+
+其中 remaining 依赖 completed (我们称呼 remaining is dependent )
+
+	_bindings = {
+		remained: {
+			value: xx,
+	       instances: [sdTextDir4Remained]
+		},
+		completed: {
+			value: xx,
+			instances: [sdTextDir4Completed],
+			dependents: [sdTextDir4Remained],
+			refreshDependents: () => {
+				each d in dependents
+					d.refresh
+					// 会调用 sdTextDir4Remained.refresh()
+			}
+		}
+	}
+	
+	// 看一下，如果 completed 更新了，则...
+	set: function (value) {
+	    ....
+	    if (binding.refreshDependents) {
+	        binding.refreshDependents()
+	    }
+	}
+
+简单说，就是 a 依赖 b, 则 b 更新时会调用 a 更新
+
+疑惑：update 可能导致两次 _update
+
+变量名也是变来变去，重构的过程也是不断打磨，以前经常对自己变量名的频繁变更很烦，看来大可不必。
+
+# [dc04a1a]
+
+> todos
 
