@@ -496,7 +496,7 @@ make seedInstance emitter
 
 - 从表达式解析逻辑看出一点解析深层属性的逻辑
 
-$ [5227248]
+# [5227248]
 
 > event delegation in sd-each
 
@@ -624,6 +624,64 @@ $ [5227248]
 
 > add simple example & manual refresh of computed properties
 
-
-
 疑惑: refresh 和 update 除了后者多了保护返回，其他几乎一样，后续留意
+
+# [7a0172d]
+
+> auto parse dependency for computed properties!!!!!
+
+## 自动解析依赖
+
+	scope.completed = {get: function () {
+        return scope.total - scope.remaining
+    }}
+    // completed 依赖了 total 和 remaining
+   	
+自动设置 total 和 remaining 的 dependents 为 completed
+
+规定有依赖的变量都是用 {get: fun}  定义，然后在初始化的时候，就能收集到这部分有依赖的绑定。
+
+	get: function () {
+            // debugger;
+            if (parsingDeps) {
+                depsObserver.emit('get', binding)
+            }
+
+每次访问绑定变量都会触发一个事件
+	
+	Seed.prototype._parseDeps = function (binding) {
+	    depsObserver.on('get', function (dep) {
+	        if (!dep.dependents) {
+	            dep.dependents = []
+	        }
+	        dep.dependents.push.apply(dep.dependents, binding.instances)
+	    })
+	    // 调用这句就会进入 get 方法里，get 方法体里面每次使用
+	    // 别的绑定对象就会触发 'get' 事件，在上面事件处理器
+	    // 去设置 dependents
+	    binding.value()
+	    depsObserver.off('get')
+	}
+
+# [dada181]
+
+> fix _dump()
+
+# [faf0557]
+
+>no longer need $refresh
+
+# [c0a65dd]
+
+> clean up, trying to fix delegation after array reset
+
+- sd-each
+	
+	目前代理事件只有在 sd-each 中使用，bind 过程直接给delegator （父el） 设置标志，具体过滤器 delegateCheck 的时候不需要执行选择器match的代码
+	
+- 初始化时机又改了
+
+	原来在绑定的同时调用 update, 现在变成 compile之后 在统一 copy 数据初始化
+
+不断重构，分分合合，跟着作者一起纠结思考~~~
+
