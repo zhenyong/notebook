@@ -725,3 +725,137 @@ make seedInstance emitter
 
 > clean up binding
 
+# [60a3e46]
+
+> sd-if
+
+只管理了节点增删，应该会有编译之类的逻辑吧？
+
+# [646b790]
+
+> sd-style
+
+直接 el.style[camelProp] = value
+
+# [62a7ebe]
+
+> remove unused
+
+# [76ee306]
+
+> remove redundant dependencies for computed properties
+
+为了解决这个情况
+
+	 scope.total = {get: function () {
+        return scope.todos.length
+    }}
+
+    scope.completed = {get: function () {
+        return scope.total - scope.remaining
+    }}
+   
+
+提交代码前会出现
+
+completed 依赖 total 和 todos, 之后 todos 更新主动触发 total 和 completed 更新，total的更新再次触发 completed 更新
+	
+提交代码之后
+
+	completed 依赖 total & remaining
+	total 依赖 todo
+
+但是实现逻辑有bug，假如 a 和 b 都依赖 c，那么c 只有能记录一个a / b，谁先 computed 就记录谁
+
+# [f9077cf]
+
+> html and attr directives
+
+# [7fd557c]
+
+> text parser started, features, optional oneway binding for input
+
+# [b5f0227]
+
+> finish text parser
+
+把 {{xx}} 当做 sd-text 处理
+
+# [8c8a07d]
+
+> chinese readme
+
+# [0e91e50]
+
+> minor updates
+
+# [8e028ab]
+
+> remove explorations
+
+作者吸收了 rivets 的精华呀
+
+# [3709862]
+
+update examples
+
+# [9602102]
+
+> update todo
+
+# [e49a31c]
+
+> todo
+
+# [4dad89d]
+
+> readme
+
+# [953fd1a]
+
+> fix array augmentation methods
+
+# [75fc96a]
+
+> license
+
+# [52645e3]
+
+> move defineProperty() into Binding, add setter for computed property
+
+nice
+
+# [e762cc7]
+
+> separate deps-parser
+
+依赖解析的相关逻辑封装，nice
+
+# [7ad304e]
+
+> clean up, add comments
+
+# [c2faf1c]
+
+> parse key path in directive parser
+
+# [d26ec01]
+
+> bower
+
+# [4126f41]
+
+> nested properties
+
+
+a.b.c
+
+a -> scope = {} -> defineProperty(scope, 'b')
+
+a.b -> scope = {} -> defineProperty(scope, 'c')
+
+
+# [bf71151]
+
+> update nested props example
+
