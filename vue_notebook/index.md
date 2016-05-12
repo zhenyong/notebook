@@ -685,3 +685,43 @@ make seedInstance emitter
 
 不断重构，分分合合，跟着作者一起纠结思考~~~
 
+# [01fae38]
+
+> fix delegation, and invoke updates during binding
+
+作者有个习惯，传递中间变量时尽量减少变量的层次，也是对的，避免脑子要hold住太多， 例如把 this.seed.el.delegator => this.seed.delegator，以后修改代码也会稳定点。
+
+这次重构后，初始化和各种 update 逻辑混乱，多次重复，看后面的代码吧
+
+# [832e975]
+
+> separate binding into its own file
+
+现在清晰多了，捋一下
+
+## Seed构造
+
+- 拷贝数据到 scope
+
+- _compileNode
+	
+	+ parse expression as dirInstance
+	+ seed._bind(dirInstance)
+
+		- _createBinding
+			
+			+ bindInstance.set
+			+ collect computed
+			+ defineProperty
+			
+		- dirInstance.bind 
+		- dirInstance.update
+	
+- 处理 _computed
+
+目前重构后思路还是有点绕
+
+# [60e246e]
+
+> clean up binding
+
