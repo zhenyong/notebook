@@ -936,5 +936,85 @@ a.b -> scope = {} -> defineProperty(scope, 'c')
 
 - new Directive(dirname, expression, oneway)
 
+		set this._update
+		call this.parseKey
+		call parseFilter
+			
+
+- update
 	
 	
+	
+- refresh
+- apply
+- applyFilters
+- parseKey
+
+
+		this.key
+		this.arg
+		this.inverse
+		this.nesting
+		this.root
+
+- parseFilter
+
+		this.filters = [{name,apply,args},...]
+
+## deps-parser
+
+- observer
+- parse
+	
+之前我对 filterDeps 的意义误会了，
+
+        <span sd-text="preA"></span>
+        <span sd-text="a"></span>
+        <span sd-text="getA"></span>
+        <span sd-text="getSameA"></span>
+ 
+       scope.preA = 1;
+       scope.a = {
+        get: function () {
+            return scope.preA + 1;
+        }
+       };
+
+       scope.getA = {
+        get: function () {
+            return scope.a + 1;
+        }
+       };
+
+       scope.getSameA = {
+        get: function () {
+            return scope.a + 1;
+        }
+       };
+       
+       setTimeout(()=>{
+       	scope.preA = 2;
+       })
+
+经过 deps-parser 之后：
+
+	preABind = {
+		deps: []//不依赖睡
+		subs: [getSameA-textDir, getA-textDir, a-textDir]
+	}
+	
+	getABind = {
+		deps: [preABind],
+		subs: []//不主动触发谁
+		之前误会这里 subs 的缺失，
+		这里 subs 意味着所属者更新后会去刷新他 subs 里面的指令，
+		我原来设想 preA 触发 a, a 触发 getA... 
+		作者的实现摈弃多级 pub，
+		直接在依赖树的节点写入上层，包括根节点的指令
+	}
+	
+	getSameA = {
+		deps: [preABind, aBind],// 依赖关系的表明是夸层级的
+		subs: []
+	}
+
