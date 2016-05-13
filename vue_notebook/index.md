@@ -859,3 +859,82 @@ a.b -> scope = {} -> defineProperty(scope, 'c')
 
 > update nested props example
 
+# [fa45383]
+
+> shorten some function names since they cant be mangled
+
+# [fa45383]
+
+> shorten some function names since they cant be mangled
+
+为压缩重构变量
+
+另外 依赖变量的命名变得好理解多了，publish & subscribe
+
+# [f5995a5]
+
+> bootstrap returns single seep if that's the only one
+
+纠结了四五回了吧，呵呵
+
+# [5200951]
+
+> restructure todomvc, add $watch/$unwatch
+
+是时候捋一下：
+
+## Seed
+
+- Seed (el, options)
+
+		拷贝 options 到 this
+		new Scope 
+		拷贝 data 到 scope ( 如果有 )
+		invoke ctrl
+		compile node
+		auto deps extract
+		
+- _compileNode
+
+		文本节点 {{x}} => _compileTextNode
+		
+		其他标签 => 
+		
+		if sd-each
+			parse as dir
+			seed bind dir
+		
+		if ctrl but not root
+			new chid Seed
+		
+		else
+			each attr
+				each exp
+					parse as dir
+					seed bind dir
+			递归 compile child nodes	
+
+- _compileTextNode
+
+- _bind
+
+- _createBinding
+
+- _unbind
+
+- _destroy
+
+## Scope
+
+- $watch
+- $unwatch
+- $dump
+- $serialize
+- $destroy
+
+## Directive
+
+- new Directive(dirname, expression, oneway)
+
+	
+	
