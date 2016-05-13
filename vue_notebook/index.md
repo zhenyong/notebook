@@ -891,7 +891,7 @@ a.b -> scope = {} -> defineProperty(scope, 'c')
 		new Scope 
 		拷贝 data 到 scope ( 如果有 )
 		invoke ctrl
-		compile node
+		call _compileNode
 		auto deps extract
 		
 - _compileNode
@@ -918,6 +918,13 @@ a.b -> scope = {} -> defineProperty(scope, 'c')
 
 - _bind
 
+	identify target seedIns
+	call seed._createBinding
+	binding <-> dir
+	dir.bind // 指令执行前需要预处理，如：初始化变量
+	dir.update
+	dir.refresh
+
 - _createBinding
 
 - _unbind
@@ -942,8 +949,6 @@ a.b -> scope = {} -> defineProperty(scope, 'c')
 			
 
 - update
-	
-	
 	
 - refresh
 - apply
@@ -1018,3 +1023,37 @@ a.b -> scope = {} -> defineProperty(scope, 'c')
 		subs: []
 	}
 
+## Binding
+
+- Binding
+
+		 this.seed = seed
+	    this.key  = key
+	    var path = key.split('.')
+	    this.inspect(utils.getNestedValue(seed.scope, path))
+	    this.def(seed.scope, path)
+	    this.instances = [] //关联 dirIns
+	    this.subs = [] // 关联依赖当前变量的指令，订阅者
+	    this.deps = [] // 依赖其他变量的 bindIns
+
+- inspect (value)
+
+>Pre-process a passed in value based on its type
+
+		如果是 {get:, set:} 则标记 computed
+		如果是 Array, 则 拦截数组原生方法...
+		this.value= value
+	
+- def
+	
+	定义 getter/setter
+
+- update (value)
+	
+		this.inspect(value)
+	    each dir.update(value)
+	    this.pub()
+	
+- pub
+
+		each subs : dir.refresh()
