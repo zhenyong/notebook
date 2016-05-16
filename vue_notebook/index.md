@@ -1057,3 +1057,118 @@ a.b -> scope = {} -> defineProperty(scope, 'c')
 - pub
 
 		each subs : dir.refresh()
+
+# [8411724]
+
+> grunt release task
+
+# [58363eb]
+
+> fix sd-focus, comply with todomvc spec
+
+保证浏览器渲染完dom 之后才调用 .focus
+
+# [8eedfea]
+
+> computed properties now have access to context scope and element
+
+	scope.computedKey = {
+		get: function (obj) {
+			// obj is
+			// { el: self.seed.el,
+        	// scope: self.seed.scope }
+        	obj.scope.a.b.c
+		}
+	}
+	
+	// 调用 get 都会传入这个参数，这样导致深层 scope 访问时
+	// 如果没有的话会报错，再自动解析依赖的时候
+
+	function catchDeps (binding) {
+	    observer.on('get', function (dep) {
+	        binding.deps.push(dep)
+	    })
+	    binding.value.get({
+	        scope: createDummyScope(binding.value.get),
+	        el: dummyEl
+	    })
+	    observer.off('get')
+	}
+	
+	createDummyScope 方法做的就是：
+	
+	解析 obj.scope.a.b.c 字符串，然后创造
+	
+	scope = {
+		a: noop {
+			b: noop {
+				c: noop
+			}
+		}
+	}
+
+# [de1c1a1]
+
+> dynamic context computed properties
+
+## deps-parser.js
+	
+	<li sd-show="a"
+
+	scope.a = {get: function (e) {
+        return filters[scope.filter](e.scope.completed)
+    }}
+	
+	aBinding = {
+		...,
+		contextDeps: ["completed"]// 来自 "e.scope.completed"
+	}
+	
+	seed Of aBinding = {
+		...,
+		_contextBindings: [aBinding]
+	}
+	
+## Seed
+
+对于形如
+
+	scope.a = {get: function (e) {
+        return filters[scope.filter](e.scope.completed)
+    }}
+
+因为这里的 obj.scope 是模拟的，所以没有相关的 defineProperty 逻辑，也就是无法自动计算 `a` 的依赖，于是就主动添加到 completedBinding 的 subs
+
+在 deps-parser 处理之后， seed 收集了 _contextBindings 数组
+	
+	each _contextBindings : seed._bindContexts(binding)
+
+
+	SeedProto._bindContexts = function (bindings) {
+	    var i = bindings.length, j, binding, depKey, dep
+	    while (i--) {
+	        binding = bindings[i]
+	        j = binding.contextDeps.length
+	        while (j--) {
+	            depKey = binding.contextDeps[j]
+	            dep = this._bindings[depKey]
+	            dep.subs.push(binding)
+	            
+	            /*
+	            completedBinding = {
+	            	...,
+	            	subs: [aBinding]
+	            }
+	            
+	            */
+	            
+	        }
+	    }
+	}
+
+简单理解，收集 contextDeps 和 deps 的用途差不多
+
+
+
+	
+	
