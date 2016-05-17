@@ -918,12 +918,12 @@ a.b -> scope = {} -> defineProperty(scope, 'c')
 
 - _bind
 
-	identify target seedIns
-	call seed._createBinding
-	binding <-> dir
-	dir.bind // 指令执行前需要预处理，如：初始化变量
-	dir.update
-	dir.refresh
+		identify target seedIns
+		call seed._createBinding
+		binding <-> dir
+		dir.bind // 指令执行前需要预处理，如：初始化变量
+		dir.update
+		dir.refresh
 
 - _createBinding
 
@@ -1015,7 +1015,7 @@ a.b -> scope = {} -> defineProperty(scope, 'c')
 		这里 subs 意味着所属者更新后会去刷新他 subs 里面的指令，
 		我原来设想 preA 触发 a, a 触发 getA... 
 		作者的实现摈弃多级 pub，
-		直接在依赖树的节点写入上层，包括根节点的指令
+		直接在依赖树的叶子写入上层，包括根节点的指令
 	}
 	
 	getSameA = {
@@ -1168,7 +1168,19 @@ a.b -> scope = {} -> defineProperty(scope, 'c')
 
 简单理解，收集 contextDeps 和 deps 的用途差不多
 
+# [a5727bd]
 
+> avoid duplicate context dependencies
 
-	
-	
+# [2d448ea]
+
+> use for loops instead of forEach whenever possible
+
+# [2e5fc62]
+
+> 0.1.4
+
+# [d0c96c5]
+
+> comment updates
+
