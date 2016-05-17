@@ -1184,3 +1184,176 @@ a.b -> scope = {} -> defineProperty(scope, 'c')
 
 > comment updates
 
+# [cfc27d8]
+
+> separate storage in todos example, expose some utils methods
+
+# [8c50a9c]
+
+> 0.1.5
+
+# [cdfe391]
+
+> $load()
+
+# [4772f12]
+
+> fix sd-value and filters.pluralize
+
+# [8a004e7]
+
+> createTextNode in FF requires argument
+
+最新版 chrome 52 用这个方法是需要参数了
+
+# [3c5464c]
+
+> 0.1.6
+
+# [829874e]
+
+> no longer use require() when using dist/seed.js
+
+打包的时候用 wrapper/* 包裹源代码，暴露全局 Seed
+
+# [5bfb4b5]
+
+> stricter check for computed properties
+
+呼应作者那句话『你不限制，真的有人那样用~』
+
+# [2658486]
+
+> add Seed.broadcast() and scope.$on()
+
+# [cc64365]
+
+> put properties on the scope prototype!
+
+# [cc64365]
+
+> put properties on the scope prototype!
+
+- 把 computed 成员的 get/set 方法绑定 this 为 scope
+- sd-on 指令触发事件后，参数穿入 seed, 不通过 dir.seed.scope 获得，而是 dir.binding.seed.scope
+
+	绑定指令的时候 dir <-> seed  #1
+	
+	之后根据变量表达式，找到 target seed，再创建 Binding，此时 bindingIns 关联的 seed 不一定是之前的 // #2
+	
+	总结：事件处理器关注绑定变量，那么就要找到绑定变量的 target scope,指令 dir 关联 seed, 更关心是在 compile 阶段的哪个 seed（ctrl）下实例化的。还没太明白，为啥不全都关联 target scope?
+
+	
+
+		SeedProto._bind = function (directive) {
+	
+	    var key = directive.key,
+	        seed = directive.seed = this
+	        // #1
+	
+	    ...
+	
+	    // deal with nesting
+	    seed = traceOwnerSeed(directive, seed)
+	    // #2
+	    var binding = seed._bindings[key] || seed._createBinding(key)
+	    
+- 从概念上理解，Controller 就是 Scope 的子类，api.controller 的调整，避免不断引用 scope
+
+# [aff965f]
+
+> fix accidental global
+
+刷 commit 吗！
+
+# [d78df31]
+
+> rename internal, optimize memory usage for GC
+
+## 概念名词转变
+
+- Scope -> ViewModel
+- seed -> compiler
+
+如果代码写得不优雅，你怎么重构！！呵呵！！
+
+# [a85453c]
+
+> really fix GC
+
+# [a85453c]
+
+> really fix GC
+
+GC 问题经常被忽略，至少成员置 null 得做到。
+
+# [f071f87]
+
+> binding should only have access to compiler
+
+Bind 不管 vm，只管 compiler
+
+# [761b643]
+
+> new api WIP
+
+compiler <-> vm
+
+	捋一下概念：
+	我们要实现一个业务模型，接着要写 html, 绑定 vm,
+	
+ViewModel.extend => new ViewModel => new Compiler
+
+# [c98c8a6]
+
+> working, but with memory issue;
+
+奇淫技巧
+
+# [dddb255]
+
+> new api fixed
+
+# [253c26d]
+
+> 0.2.0
+
+jshint 的 loopfunc 检查还是很靠谱的
+
+# [e9f2223]
+
+> 0.2.1, remove $on/$off
+
+# [174a19f]
+
+> fix dump
+
+
+# [bf01a14]
+
+> support nested VMs and update examples to use new API
+
+- sd-controller => sd-viewmodel
+
+# [6f0eca4]
+
+> simply api;
+
+# [bce2db6]
+
+> todo
+
+# [0afd700]
+
+> todos
+
+# [e028262]
+
+> watcher
+
+监听 对象/数组 的深层变化， 酷
+
+# [b89092b]
+
+> external observe
+
