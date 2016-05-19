@@ -1357,3 +1357,82 @@ jshint 的 loopfunc 检查还是很靠谱的
 
 > external observe
 
+# [84538d6]
+
+> wip
+
+defineProperty 相关逻辑从 binding.js 移到 compiler，watchArray 等相关『侦测』代码封装到 observe.js
+
+# [84538d6]
+
+> wip
+
+# [ea792ba]
+
+> make dep parsing work
+
+依赖侦测的时候， computed / __observer__ 的成员不纳入
+
+- 对于 __observer__ 的，你肯定是依赖 它下面的成员
+- 对于 computed 的，你也是依赖 get 方法体内使用到的成员
+
+# [d8644b8]
+
+> use standalone build
+
+# [beded7d]
+
+> add asyn compilation ($wait/$ready)
+
+延迟compile时机，例如可以在 init 内 $wait, 然后ajax 得到数据再 $ready
+
+# [0f56b85]
+
+> todo
+
+# [caed31f]
+
+> unobserve when setting new values
+
+# [d2779aa]
+
+> templates
+
+看到一点组件化的铺垫了
+
+# [bc84435]
+
+> wip
+
+- sd-each: sub vmIns 不管理 index
+- vmIns.$set 方法，用于，如：sd-checked="a.b"
+
+# [6ec70eb]
+
+> trying to fix nested props
+
+- compiler: 把 observables (非 {get: xxx} 的对象成员)收集，作 observe
+- deps-parser.js: filterDeps 不需要了， 因为 emit get 的时候跳过 computed 的
+
+到 0.3 再捋一下
+
+# [5b96bdc]
+
+> small cleanups
+
+# [75a4850]
+
+> allow multiple VMs sharing one data object
+
+场景 var data = {a:xx}
+
+data 用在两个 VM 中，当第二个 vm 在作 observe 的时候， `data. __observer__` 就存在了，虽然作了监控，但是第一次 observe 会对每个 key 触发 set 事件，下面代码相当于再触发一次 set 事件
+
+	if (alreadyConverted) {
+                emitSet(obj, obj.__observer__)
+            }
+
+# [0c3d629]
+
+> small fix
+
