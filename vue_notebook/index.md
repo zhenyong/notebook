@@ -1436,3 +1436,52 @@ data 用在两个 VM 中，当第二个 vm 在作 observe 的时候， `data. __
 
 > small fix
 
+# [ee09149]
+
+> jshint pass
+
+# [0a45bb8]
+
+> small cleanups
+
+# [77ce1fc]
+
+> directly use array length
+
+把数组长度当做一个成员并且监听，实现不太优雅
+
+数组和对象都看做 observable 就行，多弄一个 arrays 来收集，不够抽象呀！
+
+# [c6c5fdb]
+
+> fix each.js for new architecture
+
+英雄所见略同！
+
+- 把非 {get:xx} 对象 和 数组 都看做 observable, 一起收集
+- sd-each: 移除 updateIndexs 逻辑，使用数组 splice 方法，在创建插入时就是准确的 index
+
+splice 拦截里面的 `index` 计算，终于是对了，之前我想了半个小时，坑呀！
+
+# [fbe6b56]
+
+> fix todos example
+
+# [9c4b62f]
+
+> fix init value for Directives
+
+疑问：
+
+	DirProto.update = function (value, init) {
+
+update 方法第二个参数，为啥 comile 初始化值的时候没有设置为 true，啥时候用的
+
+# [e1ce623]
+
+> add utils.extend
+
+顺手移除了 oneway，目测不会放弃 oneway，后面应该会换个更方便的语法
+
+
+
