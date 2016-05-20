@@ -1483,5 +1483,354 @@ update 方法第二个参数，为啥 comile 初始化值的时候没有设置�
 
 顺手移除了 oneway，目测不会放弃 oneway，后面应该会换个更方便的语法
 
+# [9d0d211]
+
+> expression parsing
+
+思路就是把表达式解析成一个 {get:xx} 赋值给 binding.value, 后续就跟之前的 computed 一样处理
+
+# [b379274]
+
+> make it cleaner
 
 
+# [874afe2]
+
+> $watch/$unwatch
+
+之前的 $watch 是找到 binding[key].subs，然后塞一个 callback 进去，当 refresh 的时候就会调用到这个 callback，非常不优雅，如今的 $watch 相当于一个糖果api，只是帮你监听 change:key 事件
+
+# [c6a25eb]
+
+> npm, remove wrapper
+
+要不要那么纠结！
+
+# [81324ab]
+
+> 0.3.1
+
+# [b5bcee5]
+
+> remove legacy eventbus
+
+这个全局 eventbus 交给用户自己创建更优雅
+
+# [d7f753e]
+
+> comments
+
+学英文~~
+
+# [8eb3c17]
+
+> more meta
+
+# [c6903e0]
+
+> get ready for tests
+
+没人会给没测试的项目 pr，听说 vue 是 100% 测试覆盖率，^_^
+
+# [498778e]
+
+> 0.3.2 - make it actually work for Browserify
+
+捋一把
+
+
+	vm 		
+	|-$el	
+	|-$parent
+	|-$compiler	<<=>>
+			|- el
+			|- vm	<<=>>
+			|- directives [dir,...]
+							|- vm	<<=>> $compiler.vm
+							|- el
+							|- binding
+							|- compiler	<<=>> $compiler
+							|- directiveName
+							|- expression //完整
+							|- rawKey	//除去过滤器
+							|- arg	// arg:key
+							|- key
+							|- nesting (Num)// ^ 往上多少级父亲
+							|- root (Bool)
+							|- filters [{name:x,apply:x,args}...]
+
+			|- expressions [binding] // 表达式
+			|- observables [binding] // 非 {get:xx} 的对象 和 数组
+			|- computed [binding] // 表达式 or {get:xx}成员
+			|- ctxBindings [binding] // {get:fun} fun中有依赖的
+			|- parentCompiler
+			|- bindings [binding]
+							|- value
+							|- isComputed
+							|- rawGet
+							|- contextDeps ['vm.x',...]// get 中依赖的别的成员
+			|- rootCompiler
+			|- observer (Emitter)
+					|- proxies {}
+
+---
+	compiler.bindings = {
+		key: {
+			instances: [dir, ...]
+		}
+		subs: [bindingA, ...]
+	}
+	
+	compiler 1...N	(key 1..1 binding) 1..N dir
+						===> 值改变之后的更新线路 ===>
+
+---
+	
+	依赖关系是用 binding 的引用
+	
+	binding.update()
+		each dir in instances : dir.update()
+		call pub()
+			==>
+			each binding in subs : dir.refresh()
+										==>
+										each dir in instances : dir.refresh()
+	
+	外部引起的值改变先是 update 再触发依赖自己的 computed 成员去 refresh
+---
+
+## ViewModel
+
+- ViewModel (options)
+
+	=> new Compiler(this, options)
+
+- $set (key, value)
+
+	对 vm 设值，key 可以为 a.b.c 这样的
+
+- $get (key)
+- $watch / $unwatch
+- getTargetVM
+
+	在调用 $set/$get 的时候，前提是有了 basekey 相关的 binding 才行
+
+> vm 是面向开发者的接口，无非就是 set/get/watch，其他逻辑都封装在 compiler 里面
+
+## Compiler
+
+- Compiler (vm, options)
+	
+		1. extend(this, options)
+		2. extend(vm, options.data)
+		3. determine el
+		4. prototypal inheritance of bindings
+		5. call options.init
+		6. for key in vm : createBinding(key)
+		7. compileNode
+		8. for bindIns in observables : 
+			Observer.observe(bindIns.value, bindIns.key, this.observer)
+		9. DepsParser.parse(computed)
+		10. bindContexts(ctxBindings)
+			
+
+- setupObserver
+
+ > 反正代码看久了，觉得内部也基于事件的话，理解起来很自然
+
+		observer
+	        .on 'get'
+	        	depsOb.emit 'get' //为了依赖侦测
+	        .on 'set' 
+				emit 'change:key'
+				bindings[key].update(val)
+	        .on 'mutate' 
+	            emit 'change:key'
+	            bindings[key].pub()
+
+- createBinding
+
+		表达式
+		ExpParser.parseGetter(key, this)
+		binding.value = { get: getter }
+		this.markComputed(binding)
+		this.expressions.push(binding)
+       
+---
+		非表达式
+		compiler.bindings[key] = new Binding(compiler, key)
+		对形如 `a.b.c` 这类，会保证
+		binding = {
+			'a': 
+			'a.b':
+			'a.b.c': 
+		}
+		每层 path 都有一个 bindingIns
+		只对第一层 path 调用 this.define(a, aKeyBinding)
+		
+疑问：为什么要保证每层 path 都有 bingingIns，后面阅读留一下
+
+- compileNode (node, isRoot)
+	
+	    //if text node 则 compileTextNode(node)
+	    //if 标签元素
+	        //if sd-each 
+	            parse then bindDirective
+	        //if sd-vm 且 非根
+	                new ChildVM
+	        //if 其他元素
+                // 遍历属性，跳过有 vm 声明的
+                		//遍历表达式
+						parse then bindDirective 
+	            // 递归 compile 子元素
+
+- bindDirective
+
+		找到 target compiler
+		创建 binding
+		设置 subs
+		执行 开发者的 bind hook 
+		if computed 
+			call refresh
+		else
+			call update
+
+- markComputed
+	
+- define (key, binding)
+
+		针对对根成员，定义 getter/setter，另外 observables 也是在这里收集的
+	
+		难点：
+		
+		getter 会触发 'get' 事件，目前是为了依赖侦测，为了获得最『纯净』的底层依赖，
+		对以下类型不触发，因为以下类型的值肯定依赖更深的属性：
+			isComputed
+			value.__observer__
+			array 
+			
+		setter
+		对于 computed 的，有 set 方法就直接用，没有就不管了
+		非 computed 的话，要先移除 observe 设置之后重新 observe
+			解析：primite 类型不痛不痒，对象类型确实是要重新构建 __values__ 之类的
+
+- bindContexts
+
+	subs 存放的是 bindingIns, 而 contextDeps[] 放的是变量名，要通过...
+	
+- destroy 
+
+	有个细节容易忽略：
+	
+		<parentCompiler>
+		    <subCompiler sd-x="^name">
+		</parentCompiler>
+		
+		subCompiler = {
+		    directives: [nameDir]
+		}
+		
+		parentCompiler={
+		    bindings: {
+		        // 对应 ^name
+		        name: {
+		        	// subCompiler 销毁时要移除 nameDir
+		            instances: [nameDir, ...]
+		        }
+		    }
+		}
+	
+		dir <==> compiler 这是在编译阶段确定，但是 dir 的执行是跟绑定变量有关的
+		参考上面的层级，当 subCopiler 销毁的时候， nameDir 就再也不用了
+	
+---
+	
+	表达式的 binding 不存放在 bindings{} 里
+---
+
+- compileTextNode
+
+## Directive
+
+- Directive (directiveName, expression)
+
+		each definition
+			this._unbind = 
+			this._update
+			this.xxx = xxx ...
+		parse key
+		parse filters
+
+- update
+	
+	值改变的时候会调用，只针对非 computed
+
+	注释说 this will only be called once during initialization 是不对的
+
+- refresh
+
+	值改变的时候会调用，只针对 computed 成员，当所依赖发生改变时
+
+- _update
+
+	开发者扩展
+
+- apply
+
+	apply filter and call _update
+
+- unbind
+- _unbind
+	
+	开发者扩展
+	
+## Binding
+
+## ExpParser
+
+利用 arttemplate 的compile解析引擎抽取表达式中的变量，然后构造一个 Function，方法体包含这些变量的使用，mock 一个 {get: } 的 computed 成员，有点黑魔法的感觉
+
+
+
+## observer
+
+	
+	vm.a = { // objA 
+		b: { // objA.b
+			c: 'this is c'
+		},
+		b2: { // objA.b2 
+			c2: 'this is c2'
+		}
+	}
+	
+	objA.__observer__.on 'evName' ()=> {
+		compiler.observer.emiit 'evName'
+	}
+	objA.__values__ = {}
+	
+	bind (obj, key, path, observer)
+	
+	>>> bind (objA, 'b', null, objA.__observer__)
+		
+		objA.__values__[b] <= objA.b
+		objA.__observer__.emit 'set' with key 'a.b'
+	
+		defineProperty objA, 'b', 
+			get:
+				emit when primite value with full key
+				return  objA.__values__['b']
+			set:
+				objA.__values__['b'] = newValue
+				***
+				watch (newB, 'b', objA.__observer__)
+				***
+					===>
+					>>> bind (newB, 'b.c', 'b', objA.__observer__)
+						newB.__values__['b.c'] = newC
+						...
+						***
+						watch (newC, 'b.c', objA.__observer__)
+						***
+						exit when primite
+	
