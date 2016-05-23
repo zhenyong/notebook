@@ -1790,8 +1790,6 @@ update 方法第二个参数，为啥 comile 初始化值的时候没有设置�
 
 利用 arttemplate 的compile解析引擎抽取表达式中的变量，然后构造一个 Function，方法体包含这些变量的使用，mock 一个 {get: } 的 computed 成员，有点黑魔法的感觉
 
-
-
 ## observer
 
 	
@@ -1834,3 +1832,35 @@ update 方法第二个参数，为啥 comile 初始化值的时候没有设置�
 						***
 						exit when primite
 	
+
+# [df21257]
+
+> unit tests for binding.js
+
+根据方法分组, 百分百覆盖的借助
+
+。。。测试。。。
+
+# [75dcb03]
+
+> use __proto__ interception for array methods
+
+IE 11 才开始支持呢
+
+# [c94ff6b]
+
+> simplify template API
+
+于是 template 的用法就跟 Backbone 差不多了
+
+# [5ff47a8]
+
+> fix observer mechanism
+
+observable 那类对象，监听的时候会触发各层 'set' 事件，当你通过 vm.a.b.c 设置值的时候，会再触发一次，而且只需要遍历 vm.a.__observer__.values 就行，里面存放的key都是打平的，之前 emitSet 里面递归是不对的
+
+
+
+
+
+
