@@ -1859,8 +1859,86 @@ IE 11 才开始支持呢
 
 observable 那类对象，监听的时候会触发各层 'set' 事件，当你通过 vm.a.b.c 设置值的时候，会再触发一次，而且只需要遍历 vm.a.__observer__.values 就行，里面存放的key都是打平的，之前 emitSet 里面递归是不对的
 
+# [4209e27]
 
+sd-if and minor fixes
 
+# [4003fe2]
 
+> implement new API per spec
 
+	function templateToFragment (template) {
+	    if (template.charAt(0) === '#') {
+	        var templateNode = document.querySelector(template)
+	        if (!templateNode) return
+	        template = templateNode.innerHTML
+	    }
+	    var node = document.createElement('div'),
+	        frag = document.createDocumentFragment(),
+	        child
+	    node.innerHTML = template.trim()
+	    /* jshint boss: true */
+	    while (child = node.firstChild) {
+	        frag.appendChild(child)
+	    }
+	    return frag
+	}
+	
+	node 是个临时的 div 节点，因为没有 frag.innerHTML 
+
+# [8a94192]
+
+> new init/extend options API
+
+# [9297042]
+
+> directive interface change
+
+外部关联 => 构造参数
+
+# [eef0dc6]
+
+> private directives and filters
+
+	parseFilter(filterExps[i],this.vm.constructor.options)
+   
+   感觉还是要外部穿入 privateFilters {} 更优雅
+
+# [ec86b9f]
+
+> ViewModel.extend() should also extend Object options
+
+# [ec86b9f]
+
+> ViewModel.extend() should also extend Object options
+
+`el` 不继承，props 中，不覆盖原型地继承
+
+# [dbcd78f]
+
+> fix: each options should be mixed into compiler instance
+
+# [55ec2fc]
+
+> fix nested VM example
+
+# [2232cf2]
+
+> $index for each items
+
+# [331f03b]
+
+> array methods should be inenumerable
+
+# [98d1108]
+
+> detach container before batch DOM updates for sd-each
+
+# [61e897e]
+
+> avoid no parent detach
+
+# [1e827e8]
+
+> compiler clean up, vm & partial API, jshint test files
 
