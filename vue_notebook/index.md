@@ -1942,3 +1942,201 @@ sd-if and minor fixes
 
 > compiler clean up, vm & partial API, jshint test files
 
+# [61bddb0]
+
+> clean up utils
+
+# [a10fdbd]
+
+> should remove partial attribute
+
+# [b0dcfd5]
+
+> clean up compiler + comments
+
+# [a21e890]
+
+> implement $ event methods, optimize for minification
+
+event scope <=> compiler
+
+# [f1179ac]
+
+> tests for $ event methods
+
+# [3cb7d1a]
+
+> rename sd-each to sd-repeat
+
+# [3159c9a]
+
+> fix sd-repeat pop/shift/splice on empty array
+
+# [9405ed7]
+
+> rename `props` options to `proto`
+
+# [65faa95]
+
+> move all API methods to Seed
+
+# [99b25b2]
+
+rename `prop` option to `scope`
+
+# [af342b7]
+
+> remove context binding related stuff
+
+推荐都用表达式?!
+
+# [094a1fe]
+
+> simple no-data directive
+
+对于 simple dir, 在解析完 compiler.bind 的时候，就只执行一下definition 方法
+
+# [5fa908d]
+
+> sd-id
+
+功能皆指令
+
+# [fb6b4ea]
+
+> fix sd-repeat + sd-viewmodel
+
+不认同这种方案，原来问题：sd-repeat 的每个 item 的 exp 一样，所以代理事件处理器的 key 一样，一旦第一个 item 注册后，这个处理器就有了，后面的 item 同样用这个处理器导致 vm 每次都是一样
+
+这次 fix 通过不代理事件来解决，我觉得还是要代理，vm 定位准确就行了，如果担心 $index 维护麻烦, 可以加上更准确的随机 id, 这样每个item能够准确定位到  vm
+
+# [db22a2a]
+
+> fix dependency tracking for nested values
+
+"item.title + msg" 解析除 vars=['item', 'msg'], 而实际要 ['item.title', 'msg'] 这种 path
+
+# [91d8528]
+
+> use Object.create(null) for better hash
+
+get技能：
+
+a = {}
+a.constructor // Object
+a 具有 Object.prototype 的所有方法
+...
+
+b = Object.create(null)
+b.xx //啥都没
+
+# [f4d42cc]
+
+> add code coverage for unit tests
+
+用 jscoverage 作测试覆盖率监测，原理就是将 all.js 解析插入生成一份带标记的代码 all-cov.js，功能跟原来一样，然后在 runner.html 引入这份 all-cov.js
+
+# [db284ff]
+
+> move $index to VM instead of item, add $parent & $collection
+
+这样直接在 compiler 上 observe $index 方便多了
+
+# [11f89fb]
+
+> fix transition logic so previous unfinished transitions can be properly cancelled
+
+处理动画和class关系，比 ionic 的 actionsheet 部分优雅多了
+
+# [257781c]
+
+> implement custom javascript transitions
+
+*****cool~
+
+# [9dc45ea]
+
+> sd-on can now execute expressions
+
+支持这种             
+	
+	sd-on="click: this.a = 'a'"
+
+内部把表达式包装成方法
+
+# [0f7a929]
+
+> fix observer emitSet() when observed by multiple vms
+
+疑惑：改完后的效果也是一样的，按照现有的改法，怀疑是不是要把下面这段干掉
+
+	ob
+    .on('get', proxies.get)
+    .on('set', proxies.set)
+    .on('mutate', proxies.mutate)
+
+# [a8e12f8]
+
+> Firebase example + bug fixes
+> 
+> - move ensurePath() to Observer.js
+> - add Observer.ensurePaths(), which deals with the situation
+> when a scope object with nested values is given a new value
+> with incomplete nested structure. e.g. this.val = {}
+> - fix Directive argument regex
+> - sd-model: no longer locks during set() so filters work on
+> input fields
+> - sd-repeat: handles undefined update, also fix transition
+> - utils.attr now takes additional `noRemove` argument
+> - ViewModel.$emit now also triggers event on itself
+
+下面这段改动比较难理解
+
+		     observer
+	         .on('set'
+	         ....
+	+            check(key)
+	               ...
+	         })
+
+有些 {$get:} 中依赖了还没有创建绑定的key，在依赖侦测触发 get 的时候就需要动态创建
+
+# [3eba564]
+
+> fix sd-model selection position issue
+
+sd-model 内部的 set 方法是为了改变 vm 中的模型值，其中的 update 方法是 模型值 => dom 值，所以由浏览器事件处理器 set 方法执行后，dom值无需考虑，只需要设置 vm 的值，于是就 lock 住 update 方法的执行，考虑到 filters 后的值就不是浏览器 dom 本身的值（例如checkbox的checked），于是要执行 update 方法，值为 filter 之后的值
+
+# [c8779f1]
+
+> remove dead code
+
+之前 contextDeps 相关代码移除的时候，又给疑惑没解决
+
+移除那部分逻辑之前
+
+            var Demo = Seed.extend({
+                lazy: true,
+                init: function () {
+                    this.a = {c:1};
+                },
+                proto: {
+
+                    d: {
+                        $get: function () {
+                            return this.msg +(this.a.c || '')
+                        }
+                    }
+                }
+            })
+
+因为 this.a = {c:1} 在解析依赖之前会 observe(x, 'a') 之后保证了 compiler.bindings['a.c'] 存在，然后 解析 d.$get 就靠谱了
+
+可是，如果是 this.a = {}，那么在依赖侦测 d.$get 之前就不会有 compiler.bindings['a.c'], 相关依赖就不会建立，
+
+之前移除了 contenxBinding 逻辑的时候就有这个疑问，怎么破？默认都要求现有初始化值？
+
+
+
+
+
