@@ -2136,7 +2136,40 @@ sd-model 内部的 set 方法是为了改变 vm 中的模型值，其中的 upda
 
 之前移除了 contenxBinding 逻辑的时候就有这个疑问，怎么破？默认都要求现有初始化值？
 
+# [bc0fd37]
 
+> New ExpParser implementation
+> 
+> - extract all paths and replace them with correct reference
+> - in the process, create missing bindings on the owner vm's compiler
 
+sd-text="a.b"
 
+从当前递归往上找到拥有 `a` 的 vm， 作为目标 vm，另外 当目标 vm.$compiler.bindings 没有 `a.b` 则会创建一个，解决了上面的疑问！
 
+# [795d6b9]
+
+> conditional dependency tracking
+
+对于
+
+    <p>{{ok ? yesMsg : noMsg}}</p>
+
+原来
+
+	=> function () { return this.ok ? this.yesMsg : this.noMsg}
+
+经过 fix 之后
+
+	=> function () {this.ok;this.yesMsg;this.noMsg;
+	return this.ok ? this.yesMsg : this.noMsg}
+
+# [19d15ec]
+
+> Improvements to observed array extension methods
+
+get 技能:
+
+	取整
+	a=2.12312
+	~~a  //=> 2
