@@ -2173,3 +2173,48 @@ get 技能:
 	取整
 	a=2.12312
 	~~a  //=> 2
+
+
+# [628c42c]
+
+> component refactor
+
+自定义标签 elements 重构成 v-component-id
+
+# [216e398]
+
+> observer rewrite
+
+# [dc17a4e]
+
+> add benchmark for todomvc example
+
+get 技能：
+
+	log 同步异步渲染时间
+	function report () {
+		sync = now() - start
+		setTimeout(function () {
+			async = now() - start
+			console.log('render: ' + render.toFixed(2) + 'ms')
+			console.log('sync:   ' + sync.toFixed(2) + 'ms')
+			console.log('async:  ' + async.toFixed(2) + 'ms')
+		}, 0)   
+	}
+
+# [14d8ce2]
+
+>compiler rewrite - observe scope directly and proxy access through vm
+
+- vm.$scope => scope
+- 拷贝了 scope 到 vm 之后，直接 observe(scope, '',compiler.observer)
+- 每层对象都有自己独立的 `__observer__` 和 `__values__`
+	
+		scope 对应 compiler.observer 收到 'a.b.c' 事件
+	
+		scope.a = { a__observer__.emit('b.c', 'strc')
+			b: { b__observer__.emit('c', 'strc')
+				c:'strc'
+			}
+		}
+	
