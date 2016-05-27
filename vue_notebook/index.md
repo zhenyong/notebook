@@ -2218,3 +2218,603 @@ get 技能：
 			}
 		}
 	
+# [f4861ca]
+> npmignore
+
+7.0 捋一下
+
+## func
+
+- config (opts) 如：更新前缀
+
+- directive (id, fn) 注册指令 def
+
+- filter (id, fn) 注册指令 def
+
+- component (id, Ctor) 
+>注册组件，用 util.toConstructor 转为 ViewModel(或子类)
+
+- partial (id, partial)
+>注册模板，用utils.toFragment 转为 frag 节点
+
+- transition (id, transition) 
+>注册动画 def
+
+- extend (options)
+
+        /*
+            // this as parent vm
+
+            // inherit options from  parent vm's options
+
+            // process options
+
+            // def a fun as ctor, calling super ctor inner
+
+            // inherit proto, sub.vm.proto <= parent.vm.proto
+
+            // spec `constructor` for sub proto
+
+            // copy `methods` to vm.proto
+
+            // allow extended VM to be further extended
+        */
+
+- inheritOptions (child, parent, topLevel)
+>对象则 if 拷贝(一层)，方法则 mergeHook，忽略 `el` `methods`
+
+- mergeHook (fn, parentFn)
+
+- updatePrefix () 
+>更新 `v-xx` 中的 `v`
+
+## Compiler
+
+### props
+
++ options
++ data
++ vm
++ dirs []
++ computed []
++ childCompilers []
++ emitter <Emitter>
++ bindings []
++ parentCompiler
++ rootCompiler
++ childId
++ bindings {}
++ observer <Emitter>
+    - proxies
++ [repeatIndex]
+
+### func
+
+- Compiler (vm, options) {
+
+	    // flag initing
+	
+	    // process and extend options
+	
+	    // copy data, methods & compiler options
+	
+	    // setup element
+	
+	    // set compiler properties
+	
+	    // inherit parent bindings
+	
+	    // set inenumerable VM properties
+	
+	    // set parent VM
+	    // and register child id on parent
+	
+	    // setup observer
+	
+	    // beforeCompile hook
+	
+	    // the user might have set some props on the vm 
+	    // so copy it back to the data...
+	
+	    // observe the data
+	    Observer.observe(data, '', compiler.observer)
+	        //compiler.observer emit ''+'a.b.c'
+	        data = {// data.__ob__ emit 'a.b.c'
+	            a : {// data.a.__ob__ emit 'b.c'
+	                b : {//data.a.b.__ob__ emit 'c'
+	                    c: 'this is str c'
+	    
+	    // for repeated items, create an `$index` binding
+	    // which should be inenumerable but configurable
+	
+	    // vm `$data` getter/setter
+	
+	    // now parse the DOM
+	        // create necessary bindings
+	        // and bind the parsed directives
+	
+	    // extract dependencies for computed properties
+	    //  set this.binding.deps  dep.binding.subs
+	
+	    // flag end init
+	
+	    // post compile / ready hook
+
+- setupElement (options) 
+
+		// ensure node, handler opt.template, apply el props/attrs
+
+- setupObserver () // expose evt
+
+
+- compile (node, root) {
+
+	    //如果是 标签节点
+	
+	        // if repeat
+	
+	            //parse then bind
+	
+	        // if v-component but not root
+	
+	            // parse
+	            if (directive) {
+	                // component directive is a bit different from the others.
+	                // when it has no argument, it should be treated as a
+	                // simple directive with its key as the argument.
+	                if (componentExp.indexOf(':') === -1) {
+	                    directive.isSimple = true
+	                    directive.arg = directive.key
+	                }
+	                compiler.bindDirective(directive)
+	            }
+	            // bind
+	
+	        // else
+	
+	            // node.vue_trans <= v-transition
+	            // replace innerHTML with partial
+	            // compileNode
+	
+	
+	    // 如果是 文本节点
+	    compiler.compileTextNode(node)
+
+- compileNode (node)
+
+	    // each attr : each exp : parse then bind
+	    // recursively compile childNodes
+
+
+
+- compileTextNode (node)
+
+	    // TextParser.parse as tokens
+	    // each tokens:
+	        //if a binding with key
+	            // if '>' as partialId, compileNode()
+	            // else parse as sd-text then bind dir
+	
+	        //if a plain string then createTextNode(token)
+
+- bindDirective (directive)
+
+	    // append to dirs
+	
+	    // for a simple directive, simply call its bind() or _update()
+	    // ** and we're done.
+	
+	    // otherwise, we got more work to do...
+	
+	    // if exp
+	        // expression bindings, created on current compiler
+	
+	    // if data or vm has base key
+	        // If the directive's compiler's VM has the base key,
+	        // it belongs here. Create the binding if it's not created already.
+	        // ensure binding for that key
+	
+	    // else
+	        // due to prototypal inheritance of bindings, if a key doesn't exist
+	        // on the bindings object, then it doesn't exist in the whole
+	        // prototype chain. In this case we create the new binding at the root level.
+        
+        // 为什么：会出现不在 vm/data 上，却有 compiler.bindings[key] 的情况呢？
+        // 答：手贱手动 delete
+        // binding = bindings[key] or rootCompiler.createBinding(key)
+
+	    // push dir to binding.instances
+	    // directive <--> binding
+	
+	    // invoke bind hook if exists (dev make it)
+	
+	    // set initial value
+	    // refresh for computed, update for other
+
+
+- createBinding (key, isExp, isFn)
+
+	    // if exp
+	        // a complex expression binding
+	        // parse exp to generate an anonymous computed property {$get:xx}
+	        // apply `value`
+	        // mark computed
+	        // push to exps
+	
+	    // just key
+	        // if root key
+	            // define getter/setters for it.
+	        // else
+	            // ensure path in data so it can be observed
+	            // ensurePath for `compiler.data`
+	            // ensure binding for parentKey (recursively)
+
+- define (key, binding) 
+
+> key setter/getter on `data`
+
+	    // binding.value = data[key] // save the value before redefinening it
+	
+	    // if like {$get:x} then process markComputed
+	
+	    // ensure data[key] = undefined if non-exist
+	
+	    // if the data object is already observed, that means
+    
+	    /*
+	    疑问：在 Observe.observe 的时候，会执行一次 convert，并且触发 set
+	    然后进入 check(key)，只有又进入 define, 这里又执行一次 convert
+	
+	    多余了，看 todo demo 里面，未做任何操作清空下，set 事件两次了
+	     */
+	    
+	    // this binding is created late. we need to observe it now.
+	    // if (data.__observer__) {
+	    //     Observer.convert(data, key)
+	    // }
+
+- markComputed (binding)
+   
+	    // flag isComputed 
+	    // bind the accessors to the vm
+	    // this.computed add binding
+
++ getOption = function (type, id) {
+   
+		 // 递归查找 [this/parent].options[type][id]
+
++ execHook (id, alt)
+
+- destroy ()
+
+	    // compiler.execHook('beforeDestroy')
+	
+	    // unwatch
+	    // observer.off()
+	    // emitter.off()
+	
+	    // unbind all direcitves
+	        // if this directive is an instance of an external binding
+	        // e.g. a directive that refers to a variable on the parent VM
+	        // we need to remove it from that binding's instances
+	
+	    // unbind all expressions (anonymous bindings)
+	
+	    // unbind/unobserve all own bindings
+	
+	    // remove self from parentCompiler
+	
+	    // finally remove dom element
+	
+	    // compiler.execHook('afterDestroy')
+
+- getRoot (compiler)
+
+## ViewModel
+
+## props
+
++ $ {childId:<VM>,...}
++ $el
++ $compiler
++ $root <VM>
++ $parent <VM>
+- func
+
+## func
+
+- ViewModel (options) 直接 new Compiler
+- $set (fullkey, value) 找到 basekey 对应 vm 然后设置
+- $watch (fullkey, callback)
+- $unwatch (key, callback)
+- $destroy ()
+- $broadcast () 递归向下发事件
+- $emit () 自身&往上递归发事件
+- $on ()
+- $off ()
+- $once ()
+- $appendTo (target, cb) 
+- $remove (cb) 
+- $before (target, cb)
+- $after (target, cb)
+- getTargetVM (vm, path) 
+
+		//vm.$compiler.bindings[baseKey].compiler.vm
+
+# Directive
+
+## props
+
++ compiler
++ vm
++ el
++ isSimple
++ expression
++ rawKey
++ key
++ arg
++ isExp
++ filters [{name,args,apply}]
+
+## func
+
++ bind ()
++ _update ()
++ _unbind ()
++ ... copy from definition
++ Directive (definition, expression, rawKey, compiler, node)
+
+	    // spec isSimple
+	
+	    // mix in properties from the directive definition
+	
+	    // empty expression, we're done.
+	    
+	    // this.isSimple
+	
+	    // parseKey(this, rawKey)
+	
+	    // this.isExp
+	
+	    // parse filters
+
+- parseKey (dir, rawKey)
+
+- parseFilter (filter, compiler)
+- update (value, init) // 4 non-computed
+- refresh (value) // 4 computed
+- apply (value) 
+
+		// apply fileter and call this._update
+	
+- applyFilters (value)
+- unbind (isForUpdate)
+  
+  	  // call this._unbind
+
+- Directive.split (exp)
+- Directive.parse (dirname, expression, compiler, node)
+
+	    //check and return new Directive(dir, expression, rawKey, compiler, node)
+
+## Binding
+
+> 每一个 vm 上的属性（路径）都有一个对应的 Binding 对象，这个对象有多个作用在 DOM 上的 指令 实例，以及多个依赖
+> binding 跟属性一一对应，所以 update 等方法的触发入口是属性被改变了
+
+## props 
+
+- value
+- isExp
+- isFn
+- root
+- compiler
+- key
+- subs = []
+- deps = []
+- isComputed //表达式 / {$get:xx}
+- instances [<Dir>,...]
+
+## func
+
+- Binding (compiler, key, isExp, isFn)
+
+- update (value)
+
+        // set this.value
+        // each dir update
+        // pub()
+
+- refresh 
+   
+	    // each dir refresh
+	    // pub()
+
+- pub()
+
+  	  // each sub.refresh
+
+- unbind () {
+    
+        //unbind dirs
+        //remove from other's deps
+
+# Observer
+
+- watchObject (obj) 
+
+	    //=> each key: convert(obj, key)
+
+- watchArray (arr, path) 
+
+  	  	// 重写数组的方法
+
+- isWatchable (obj)
+
+- emitSet (obj)
+
+ 	  	 // 触发对象各路径 set 事件，通常用在重复 observe 的时候
+
+- convert (obj, key)
+
+	    //定义 obj.key 的 accessors, 通过 obj.__observer__ emit 事件出去
+	    //对 obj[key] observe
+
+- copyPaths (newObj, oldObj) 
+
+    	//保证旧对象的叶子路径都在新对象上
+
+- ensurePath (obj, fullkey)
+
+		// 保证 各层路径 accessed 和 enumerated
+
+- observe (obj, rawPath, observer)
+
+	    // 监听 obj 各层值，通过 observer 对外暴露事件
+	    // rawPath 表明 obj 在它的 vm 中的路径
+
+- unobserve (obj, path, observer)
+
+    	//obj.__observer__.off(everyKey, observer.proxies[path][everyKey])
+
+
+# Filters
+
+## func
+
+- capitalize (value) {
+
+- uppercase (value) {
+
+- lowercase (value) {
+
+- currency (value, args) {
+
+- pluralize (value, args) {
+
+- key (handler, args) {
+
+
+# Utils
+
+## props
+
+- hash {}
+- components {}
+- partials {}
+- transitions {}
+
+## func
+
+- attr: function (el, type, noRemove)
+- defProtected: function (obj, key, val, enumerable, configurable)
+- typeOf (obj)
+- bind (fn, ctx)
+- toText (value) // ensurce string|number|bool
+- extend: function (obj, ext, skipIfExist)
+- unique (arr) // new refer
+- toFragment (template) //ensure return dom (frag)
+- toConstructor (obj) //ensure return VM Ctor
+- processOptions (options)
+
+	     /* 
+	     convert options like {
+	          components: [VMCtr, ...],
+	          partials: [fragNode, ...],
+	          template: fragNode
+	     }
+	     */
+
+- log (args...)
+- warn (args...)
+- nextTick (cb)
+- makeHash ()
+
+# Deps Parser
+
+## props
+
+- observer <Emitter>
+
+## func
+
+- parse (bindings)
+
+## Exp Parser
+
+- getRel (path, compiler)
+
+> 如果当前没有 baseKey，则递归父级 形成 $parent.$parent.x.x 的访问路径
+> 另外会保证在对应 compiler 上存在 binding[path]
+
+- makeGetter (exp, raw)
+
+- escapeDollar 
+
+> Escape a leading dollar
+
+- parse (exp, compiler)
+
+> 将表达式语句解析成 function () {this.fullkeyA;this.fullKeyB;return xxxx}
+
+# Text Parser
+
+## func
+
+- parse (text)
+
+> loop match key like regex
+
+## Transition
+
+- transition (el, stage, cb, compiler)
+- applyTransitionClass (el, stage, changeState)
+
+> Togggle a CSS class to trigger transition
+
+- applyTransitionFunctions (el, stage, changeState, functionId, compiler)
+- sniffTransitionEndEvent ()
+
+# Emitter
+> use nodejs one
+
+# dirctives
+
+- component
+- if
+- on
+
+	疑问：
+		
+			if (compiler.repeat &&
+		            // do not delegate if the repeat is combined with an extended VM
+		            !this.vm.constructor.super &&
+		            // blur and focus events do not bubble
+		            event !== 'blur' && event !== 'focus') {
+	
+		
+	其中对于 !this.vm.constructor.super 的判断不是特别理解，如果强调 super 存在，那么只有 ViewModel.extend 返回才有 super, 那么是在意 数据有可能是继承过来的？？之前做过解释为什么 repeat 在现有逻辑里面不能代理事件，这里强调了 !super 还没弄清楚原因。
+
+- model
+- text
+- html
+- style
+- class
+- attr
+- visible
+- show
+- repeat
+
+# configs
+
+> 除了配置 slient/debug， 其他通常不会用到
+
+    prefix      : 'v',
+    debug       : false, (console.log)
+    silent      : false, (console.warn)
+    enterClass  : 'v-enter',
+    leaveClass  : 'v-leave',
+    attrs       : {}
+
+> 0.7.0 终于撸完，感觉读的没写的快~
+
