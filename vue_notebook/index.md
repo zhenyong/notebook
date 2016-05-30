@@ -2869,5 +2869,76 @@ why? 为了更快吗，肯定会换回来！
 
 疑问：先占位后恢复的过程，如果两个字符串长度一样，那么`strings[i]` 第二次赋值就会覆盖前一次。
 
+我会用随机数作key，用map缓存这些字符串
+
+# [04249e3]
+
+> Component Change
+> 
+> - `v-component` now takes only a string value (the component id)
+> - `Vue.component()` now also registers the component id as a custom element
+> - add new directive: `v-with`, which can be used in combination with `v-component` or standalone
+
+# [4129377]
+
+> use karma for unit tests
+
+捋一下工程构建和持续集成吧
+
+## Tasks
+
+>     grunt.registerTask( 'travis', [
+>         'build',
+>         'instrument',
+>         'karma:phantom',
+>         'casper',
+>         'coveralls'
+>     ])
+
+> 逐个分析每个任务
+
+### build
+
+作者自己写的 `gulp-component` (`component-builder` 的 gulp wrapper吧) 对 component.json 解析，目前来说就是收集所有声明的 js 文件然后合并流。
+
+1. header banner
+* out ./dist/vue.js
+* print size
+* uglify
+* header banner
+* rename vue.min.js
+* out ./dist/vue.min.js
+* print size
+* gzip
+* out ./dist/vue.min.js.gz
+
+### instrument
+	
+收集所有 vue 代码然后输出 ./test/vue.test.js，目的是为了后面做代码覆盖率，所以没有要求压缩啥的
+
+### karma:phantom
+
+	browsers: ['PhantomJS'],
+    reporters: ['progress', 'coverage'],
+    preprocessors: {
+        'test/vue.test.js': ['coverage']
+    },
+    coverageReporter: {
+        reporters: [
+            { type: 'text-summary' }
+        ]
+    }
+
+在 phantomjs 跑一遍所有单元测试代码，但是在单元测试前有个预处理，就是对 vue.test.js 作 coverage, 实际上就是对 vue 源码的xx分支打上一些标记，然后单元测试的时候使用了这份标记后的源码，得到单元测试的覆盖率， cool~
+
+### casper
+
+相当于命令行执行 casperjs 命令作 e2e 测试 test/functional/specs/ 下的用例
+
+### coverall
+
+在指定目录下生成一些单元测试覆盖率报告（lcov-report），也是便于后面使用 https://coveralls.io/ 显示一些覆盖率之类
+
+
 
 
