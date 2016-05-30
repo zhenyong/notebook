@@ -2818,3 +2818,56 @@ get 技能：
 
 > 0.7.0 终于撸完，感觉读的没写的快~
 
+# [5c73a37]
+
+> async batch update - first pass
+
+疑问：为什么用 setTimeout 替代 requestAnimationFrame?
+帧率太快了用慢一点的 setTimeout flush update 能理解，但是干掉 nextNick 为啥呢？
+
+# [c7b2d9c]
+
+> nextTick phantomjs fix, unit tests for batcher, config() api addition
+
+吐槽一下！
+
+# [7fc537a]
+
+> fix functional tests for batcher
+
+bug：model.js 里，还是需要判断 config.async
+
+# [331bcc6]
+
+> avoid duplicate Observer.convert()
+
+目前为止，我都目测出每次提交的主要不足，喜欢这种跟着作者一起思考，也许思考得更多的，脑缺氧，加油！
+
+# [c7f8a68]
+
+> test using gulp plugins instead
+
+部分工程build任务用 gulp 工具替换，特别是stream 类的任务
+
+# [d8e3853]
+
+> use custom stream functions
+
+why? 为了更快吗，肯定会换回来！
+
+# [1e58721]
+
+> perfectly resolve Chinese input methods issue with composition events
+
+当年看 NG 源码就很惊喜原来有这个事件，莫非~呵呵~
+
+# [212990a]
+
+> make exp-parser deal with cases where strings contain variable names
+
+表达式形如 sd-text='"a"+a' ，会把"a"中的 a 当做变量，解决方案是，先对 `"xx"` 占位，最后恢复
+
+疑问：先占位后恢复的过程，如果两个字符串长度一样，那么`strings[i]` 第二次赋值就会覆盖前一次。
+
+
+
