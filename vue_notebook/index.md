@@ -2958,7 +2958,72 @@ runner.html 配合 saucelabs，添加了
 
 并且本机使用 grunt-sourcelabs 插件直接跟 saucelabs 云端连接进行测试，太爽了，过去苦逼的日子呀~~
 
+# [08ba942]
 
+> fix expressions on repeated items
+
+对于 sd-on， 如果 isFun 的话，对于表达式的绑定，当代理事件执行的时候，call 到 taget el 的 vm，能解决像 {{$index}} 这样的问题问题，不过感觉还是黑魔法
+
+# [5f21eed]
+
+> Fix inline partial parentNode problem
+> 
+> Directives inside inline partials would get the fragment as the parentNode
+> if they are compiled before the partial is appended to the correct parentNode.
+> Therefore keep the reference of the fragment's childNodes, append it,
+> then compile afterwards fixes the problem.
+
+解决的问题是 compile 的时候 parentNode 不对，我觉得把这种情况的 insert 提前，这样整个 compile 过程还是有序一点
+
+# [1fb885b]
+
+> bindings that are not found are now created on current compiler instead of root
+
+当一个 basekey 不存在当前 vm，之前是在 root 去 createBinding，现在是往上递归找到最近的，拥有这个 key 的 vm（compiler）再去 ...
+
+有个小细节，判断 vm 存不存在，用的是 basekey，createBinding 用的是 path (fullkey)
+
+# [9a45f63]
+
+> clean up get binding owner compiler logic
+
+用 creatObject(null) 代替 `{}`，省了 hasOwnerproperty 的判断，知道 createObject(null) 的时候怎么就没想到省了这部分代码呢~
+
+# [f139f92]
+
+> simplify binding mechanism, remove refresh()
+
+之前捋 update, refresh, pub 的逻辑时就很想帮他重构！！！
+
+# [f139f92]
+
+> simplify binding mechanism, remove refresh()
+
+原来 update 和 refresh 针对 non-computed 和 computed 使用，现在统一为 update，两者不同的是取值调用不同，一个是调用 get 方法，一个直接用 value
+
+# [62fd49a]
+
+> do not modify original computed property getter/setters
+
+保留属性本身的特性（可遍历...），另外更新的时候，computed 类型的 value 不更新，那有什么机制可以更新 computed 类型 value 的 get 方法呢，有没必要？
+
+# [7a6169c]
+
+> separate computed properties into `computed` option
+
+我觉得好处就是：避免了一个潜规则，形如 `{xget:xx}` 这样的就是 computed
+
+# [50a7881]
+
+> refactor Compiler.createBinding
+
+最近几次提交感觉就是一个目的：用户数据不去弄它，这次重构后就很清晰，`data` 不去碰，额外的脏东西就放在 vm 上
+
+捋清:
+
+computed 表示要计算的，binding.value = {xget:xx}, 表达式 和 computed:{} 下的 binding 都会 flag 为 isComputed
+
+表达式的 binding 不放在 bindings 中，存在 exps 数组中
 
 
 
