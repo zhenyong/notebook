@@ -2939,6 +2939,28 @@ why? 为了更快吗，肯定会换回来！
 
 在指定目录下生成一些单元测试覆盖率报告（lcov-report），也是便于后面使用 https://coveralls.io/ 显示一些覆盖率之类
 
+# [0dcf28e]
+
+> add saucelabs!
+
+saucelabs.com 是一个云端浏览器测试平台，很酷~
+
+runner.html 配合 saucelabs，添加了
+
+				onload = function () {
+                var runner = mocha.run()
+                runner.on('end', function () {
+                    window.mochaResults = runner.stats
+                })
+            }
+
+便于 saucelabs 收集错误？
+
+并且本机使用 grunt-sourcelabs 插件直接跟 saucelabs 云端连接进行测试，太爽了，过去苦逼的日子呀~~
+
+
+
+
 
 
 
