@@ -3025,7 +3025,120 @@ computed 表示要计算的，binding.value = {xget:xx}, 表达式 和 computed:
 
 表达式的 binding 不放在 bindings 中，存在 exps 数组中
 
+# [9c2bb94]
+
+> common xss protection
+
+exp-parser 过滤了一些关键字等，但是没过滤 constructor, 可以更改某些类的 contructor 来攻击
+
+# [5ea44fb]
+
+> make v-repeat work with primitive values + minor directive refactor
+
+v-repeat 在 buildItem 的时候会把数组元素当做 vm 的数据来用，vm 构造过程把数据当做引用类型来用，所以把 primitive 包装成 {value: xx}，使用的时候要脑补 value 表示啥
+
+同时对数组扩展了一个 set(index, data) 方法
+
+下面例子
+
+	var numbers = [1, 2, 'text']
+    var a = new Vue({
+        el: '#test',
+        data: {
+            numbers: numbers
+        }
+    })
+    a.numbers.set(2, {value: 'xxx'})
+    
+调用了 set 之后，此时内部 collection 中，该位置的元素会变成 {value:'xx'}，因为监听了 'set' 事件，进入下面
+
+	if (primitive) {
+	    data.__observer__.on('set', function (key, val) {
+	      debugger;
+	        if (key === 'value') {
+	            col[item.$index] = val
+	        }
+	    })
+	}
+
+会把 'xxx' 替换
+
+整个过程需要一直脑补 `value` 这个 key，有没更优雅？
+
+能否在 mutate 事件中把这个 `value` 拆成 primate？
+
+# [0bee5a0]
+
+> better xss mitigation
+
+- 浏览器处理 html 的时候，先把源码 unicode 转化，所以说表达式中可以通过把危险代码转化为 unicode 执行
+
+- 加强 `.constructor` 检测，防止形如 Array.prototype['c'+'onstructor']
+
+# [ce4342b]
+
+> revert repeated item $destroy behavior
+
+是考虑到几乎不会有从 item 的 vm 主动 $destroy 的情况？
+
+# [f2e32ab]
+
+> Make Observer emit `set` for all parent objects too
+
+这样有问题：如果深层属性改了，那么 updateBinding xdata 多次
+
+# [77ffd53]
+
+> add tests for object outputing + avoid duplicate events
+
+还是会 updateBinding 多次，捋一下用例
 
 
+	 var a = new Vue({
+                el: '#hi',
+                data: {
+                    address: {
+                        city: 'sz'
+                    }
+	...
+	
 
+	
+	$data = {	 //$compiler.observer
+		
+		address: { // a__observer__
+			
+			city: 'sz' 
+			
+		}
+	
+	}
 
+	a.$data.address = {city: 'gz'}
+
+分析一下 改变 $data.adress 之后的事件流
+	
+	// 从 convert 中的 setter 中触发
+	1. $compiler.observer.emit ('set', 'address')
+	// 此时 updateBinding 一次 key 为 'address'
+	// 之后会 observe({city:gz}, address, a__observer__)
+	// 这个过程会触发 emitSet
+
+	2. 从 a_observer__ 这次触发 'set' key 为 'city'
+		3. chain 到 $compiler.observer 触发 'set' key 为 'adderss.city'，此时 rawPath
+
+	总结前后两次 updateBinding key 分别为 'address' 和 'address.city'
+
+如果
+
+	a.$data.address.city = 'xx'
+
+	a__observer__.emit set 'city' (propagate=true)
+		=> $compiler.observer.proxies['address'] 处理器
+			$compiler.observer.emit set 'address.'+'city'
+			propagate: $compiler.observer.emit set 'address'
+
+总结前后两次 updateBinding key 分别为 'address.city' 和 'address'
+
+好乱咯~~
+	
