@@ -3091,7 +3091,7 @@ v-repeat 在 buildItem 的时候会把数组元素当做 vm 的数据来用，vm
 
 > add tests for object outputing + avoid duplicate events
 
-还是会 updateBinding 多次，捋一下用例
+忽略了compile 过程 emitSet，还是会 updateBinding 多次，捋一下用例
 
 
 	 var a = new Vue({
@@ -3125,7 +3125,7 @@ v-repeat 在 buildItem 的时候会把数组元素当做 vm 的数据来用，vm
 	// 这个过程会触发 emitSet
 
 	2. 从 a_observer__ 这次触发 'set' key 为 'city'
-		3. chain 到 $compiler.observer 触发 'set' key 为 'adderss.city'，此时 rawPath
+		3. proxies chain 到 $compiler.observer 触发 'set' key 为 'adderss.city'，此时 rawPath
 
 	总结前后两次 updateBinding key 分别为 'address' 和 'address.city'
 
@@ -3141,4 +3141,51 @@ v-repeat 在 buildItem 的时候会把数组元素当做 vm 的数据来用，vm
 总结前后两次 updateBinding key 分别为 'address.city' 和 'address'
 
 好乱咯~~
+
+# [393a4e2]
+
+> v-repeat object first pass, value -> $value
+
+脑补不出 v-repeat 传 object 的场景
+
+# [e749452]
+
+> fix v-repeat reuse vm insertion when detached by v-if
+
+v-if 的设计本身就很巧妙，处理 v-repeat 的时候，太巧妙了！
+
+回忆：
+
+v-repeat 插入 item 的 el 时，会找到一个 ref 作为参照，插到他前面，可以是个元素，或者一个 hack 的 comment 节点
+
+考虑到有的 item 的 el 处于 v-if (false)，不过不要紧，v-if 为其 el 提供 el.vue_ref 给外部用于参照，v-if 的渲染逻辑也是用到这个 vue_ref 作参照的
+
+当复用 item 的时候，发现该 item 也是 v-if(false)，那么就是直接把当前 item.el.vue_ref 参照 ref 插入到恰当位置
+
+# [0e486a3]
+
+> repeat object sync and tests
+
+在每个数组扩展方法区加 updateObject，不如对 arrayproxy 本身增加扩展机制，增加 hooks，解耦
+
+看完这次修改，感觉 v-repeat 用在对象也是很酷，特别是 sync 到对象的时候觉得很酷
+
+# [31f3d65]
+
+> sync back inline input value if initial data is undefined
+
+这个体验很重要，例如你 checkbox 在 html 本来有默认值，你 bind 之后，因为 data 对应部分为 undefined，可能跟默认值冲突，那么当然保留默认值啦~
+
+对 v-model 来说，update 就是 data（vm） 引起的改变然后用 update 方法改变 dom 的某些属性，_set 就是 v-model 内部从 dom 到更新 vm 的方法，所以当初始化 data 对应部分为 undefined，直接执行 _set，意味着就用 dom 本身的值，去重置被初始值 undefined 污染的 vata（vm）
+
+# [35967cb]
+
+> vm.$set no longer need to check owner VM at run time
+
+为啥 ownerVm 不一定是 dir.vm，之前提过，把 vm 看作 data 的话，data 是跟  binding 关联的，所以说跟 target vm is target data, so then target vm is target (data)binding.compiler.vm
+
+
+
+
+
 	
