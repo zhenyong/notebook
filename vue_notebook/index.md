@@ -3184,8 +3184,33 @@ v-repeat 插入 item 的 el 时，会找到一个 ref 作为参照，插到他�
 
 为啥 ownerVm 不一定是 dir.vm，之前提过，把 vm 看作 data 的话，data 是跟  binding 关联的，所以说跟 target vm is target data, so then target vm is target (data)binding.compiler.vm
 
+# [60e5154]
 
-
-
+> v-on delegation refactor, functional tests pass
 
 	
+	<div v-on="click:onClick"></div>
+	
+	{
+		delegators: {
+			click: {
+				targets: [{
+					el: div,
+					hanlder: onClick
+				}],
+				handler: {
+					loop check target
+						exec target.handler when mach
+				}
+			}
+		}
+	}
+
+# [bda8e76]
+
+> js transitions => v-effect
+
+动画可以用 animation 或者 transform 来做，现在 v-animation / v-transition 为了区别使用那种动画结束事件，v-effect 用于自定义动画入场转场回调
+
+略显麻烦，能否监听两种事件，处理器为 once call ？这样使用者无需关心这个细节
+
