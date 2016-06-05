@@ -3214,3 +3214,96 @@ v-repeat 插入 item 的 el 时，会找到一个 ref 作为参照，插到他�
 
 略显麻烦，能否监听两种事件，处理器为 once call ？这样使用者无需关心这个细节
 
+# [63e9d72]
+
+> wrap setTimeout in JavaScript effect functions
+
+在自定义动画方法里暴露一个 "setTimeout" 方法，该方法会收集该转场期间的所有 setTimeout，便于重复动画时清空上次转场遗留的未完成的
+
+# [1a05dea]
+
+> v-with allows linking keys between child and parent VMs
+
+我觉得顺手解决了一个 bug
+
+如果元素本身有 vm，那么直接在上面 createBinding，比起原来只依据 isEmpty 是否来创建 vm 靠谱
+
+# [5100f3e]
+
+> setTimeout(0) is faster than rAF
+
+这个有点牵强，闲时确实靠谱，但是 rAF 是绘制时机响应，//留意
+
+# [5331df5]
+
+> clean up v-repeat buildItem()
+
+捋一把 if、repeat
+
+跟之前没差，变量名命名语义化一点而已
+
+# [0893163]
+
+> add `parent` option
+
+把 {compilerOptions:{parnetCompiler:xx}} 放到外面
+{parent:parentVm, compilerOptions:{}}
+
+处理器来更加面向数据模型，不用考虑太多散状的状态引用
+
+# [95c1c16]
+
+> destroy children
+
+想起多年前更别人正直的命名规范，我依然认为 node.childrens 比起 node.childrenNodes 靠谱多了
+
+# [c6961ae]
+
+> vm.$options
+
+作者一直把很多概念/脏东西 屏蔽掉，尽量暴露 vm 让开发者理解使用，酷~
+
+# [010cda6]
+
+> array linking rough pass
+
+arr = [obj] 现在 obj 改变触发 set 事件也会传到 arr 了，太脏了，呵呵
+
+- convert 准备对象的 __emitter__，把 set 事件传递到所在各个数组
+- convertKey: 对指定对象下的 key 定义 get/set
+
+# [5fb9f24]
+
+> still need to check conversion in v-repeat update
+
+现在的代码命名好多了，好理解很多，也许是一路跟过来的关系吧
+
+# [bedcb22]
+
+> allow nested path for computed properties that return objects
+
+        
+   {{nested.value.a}}
+
+    computed: {
+        nested: function () {
+            return {
+                value: {
+                    a: this.a + 2
+                }
+            }
+        }
+    }
+
+修改前，对于这样的例子是无力的，在原来的逻辑里 createBinding 的时候会进入
+
+	// ensure path in data so it can be observed
+    Observer.ensurePath(compiler.data, key)
+    var parentKey = key.slice(0, key.lastIndexOf('.'))
+    if (!bindings[parentKey]) {
+        // this is a nested value binding, but the binding for its parent
+        // has not been created yet. We better create that one too.
+        compiler.createBinding(parentKey)
+    }
+
+等同于把 nested 当作纯字面对象来理解，这样 ensurePath 之后，
