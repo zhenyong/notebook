@@ -46,24 +46,6 @@
 
 增加过滤器，重构
 
-### 思考以下重构图啥？
-
-	var filteredValue = value
-	if (value && directive.filters) {
-		filteredValue = applyFilters(value, directive)
-	}
-	
-=>
-	
-	var filteredValue = value && directive.filters
-	? applyFilters(value, directive)
-	: value
-
-我:
- 
-- 从代码语义看，前者表达方式更像 『你可以...，除非...』，后者像『如果...否则...』
-- 从执行效率上看，假如 `value && directive.filters` 为真，那么前者多了一次赋值语句
-
 ## [cf1732b]
 
 > refactor
@@ -3324,3 +3306,14 @@ ref 和 partial 都解耦成指令了
 
 对于 filters: {x} 中的方法如果方法体有 `this.` 那么这个绑定会当做表达式来解析
 
+# [3df6343]
+
+> v-if refactor + change to use childVM
+
+v-if 不能跟 v-repeat 和 v-view 一起使用
+
+# [5e638a0]
+
+> methods
+
+对 methods: {} createBinding 之后，subVm 直接 $get 父 vm 的方法也行了
