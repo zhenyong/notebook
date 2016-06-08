@@ -3317,3 +3317,120 @@ v-if 不能跟 v-repeat 和 v-view 一起使用
 > methods
 
 对 methods: {} createBinding 之后，subVm 直接 $get 父 vm 的方法也行了
+
+# [224d67d]
+
+> fix #520 let watchers handle callbacks that trigger removeCb()
+
+那位置调换了呢？还是在一次执行周期打上标记，执行过就标记一下
+
+# [cf37f7e]
+
+> Release-v0.10.6
+	
+	src
+    |- batcher.js
+    	
+    	异步批处理任务
+    
+    |- binding.js
+    	
+    	可以理解为表示一个 {{xx}} 的实例，这个绑定变量下会有多个指令
+    
+    |- compiler.js
+    	
+    	编辑咯
+    
+    |- config.js
+    	
+    	诸如前缀 'v-' 等配置
+    
+    |- deps-parser.js
+    	
+    	依赖侦测，建立 binding 之间的依赖
+    
+    |- directive.js
+    
+    	表示一个绑定的行为，内部包含过滤器
+    
+    |- directives
+        |- html.js
+        |- if.js
+        |- index.js
+        |- model.js
+        |- on.js
+        |- partial.js
+        |- repeat.js
+        |- style.js
+        |- view.js
+        |- with.js
+    |- emitter.js
+    	
+    	like nodejs' emitter
+    
+    |- exp-parser.js
+    
+    	解析表达式，构造一个对表达式求值的方法
+    
+    |- filters.js
+    
+    	内置过滤器
+    
+    |- fragment.js
+    
+    	html string -> fragment，处理 tr 等特殊情况
+    
+    |- main.js
+	
+		ViewModel 暴露公共方法
+    
+    |- observer.js
+    	
+    	对象/数组 监测机制
+    
+    |- template-parser.js
+    	
+    	将所有可能代表一个template的字符串 convert 成 fragment
+    
+    |- text-parser.js
+    	
+    	解析包含绑定的文本（文本节点，属性值, ...）
+    
+    |- transition.js
+    	
+    	动画相关，能处理 animation/transition/custom func
+    
+    |- utils.js
+    	
+    	工具
+    	
+    |- viewmodel.js
+    
+    	管理数据状态，代理了事件、dom 接口
+ 
+
+疑惑：
+	
+	if (params && params.indexOf(attrname) > -1) {
+	    // a param attribute... we should use the parent binding
+	    // to avoid circular updates like size={{size}}
+	    this.bindDirective(directive, this.parent)
+	} else {
+	    this.bindDirective(directive)
+	}
+
+		
+如果指定 paramAttributes 有 'size'，那么 binding update 的时候会去更新 vm.size, vm.size 改变引起 binding update，为了不要死循环
+
+	bind 'size' on parentCompiler
+	-- update -->
+	child.vm.size = newValue
+
+依据这种机制，那么 paramAttributes 就是用来单向传递参数？
+
+而 v-with 是用来双向传递参数？
+
+*get 技能*
+
+	str.replace(ESCAPE_RE, '\\$&')
+	// $& 表示整个匹配内容
