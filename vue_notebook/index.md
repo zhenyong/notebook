@@ -3316,7 +3316,7 @@ v-if 不能跟 v-repeat 和 v-view 一起使用
 
 > methods
 
-对 methods: {} createBinding 之后，subVm 直接 $get 父 vm 的方法也行了
+对 methods: {} createBinding 之后，subVm 直接 get 父 vm 的方法也行了
 
 # [224d67d]
 
@@ -3434,3 +3434,83 @@ v-if 不能跟 v-repeat 和 v-view 一起使用
 
 	str.replace(ESCAPE_RE, '\\$&')
 	// $& 表示整个匹配内容
+
+# after 0.10.6
+> 开始重写
+
+# [0b70e52]
+
+> exploring scope inehritance
+
+*get 技能*
+
+	
+	parent = {}
+	def(parent, 'name', {set: ()=> {console.log('set in parent')}})
+	
+	Child = function (){}
+	Child.prototype = parent
+	
+	child = new Child()
+	
+	child.name = 'peter'
+	// 打印 'set in parent'
+	
+	'name' in child
+	//=> true
+	
+原型联上的 get set 也是会调用的哟
+
+	xx
+	|- src
+	    |- api
+	        |- data.js
+	        
+	        	copy data to scope, sync mechanism
+	        
+	        |- dom.js
+	        |- events.js
+	        |- global.js
+	        |- lifecycle.js
+	    |- batcher.js
+	    |- binding.js
+	    |- config.js
+	    |- directive.js
+	    |- emitter.js
+	    |- instance
+	        |- bindings.js
+	        	
+	        	setup binding tree with default point
+	        	listen ob event to updateBinding
+	        
+	        |- compile.js
+	        |- data.js
+	        |- proxy.js
+	        	
+	        	avoid scope chain, proxy access owner data on self
+	        
+	        |- scope.js
+	        
+	        	初始：scope chain, send down upstream change evt
+	        	销毁
+	        	
+	        
+	    |- observe
+	        |- array-augmentations.js
+	        |- object-augmentations.js
+	        |- observer.js
+	    |- parse
+	        |- directive.js
+	        |- expression.js
+	        |- path.js
+	        |- template.js
+	        |- text.js
+	    |- transition
+	        |- css.js
+	        |- js.js
+	        |- transition.js
+	    |- util.js
+	    |- vue.js
+	    
+	    	构造
+
