@@ -3461,9 +3461,11 @@ v-if 不能跟 v-repeat 和 v-view 一起使用
 	
 原型联上的 get set 也是会调用的哟
 
+### 初步设计
+
 	xx
 	|- src
-	    |- api
+	    |- api // 开发者使用
 	        |- data.js
 	        
 	        	copy data to scope, sync mechanism
@@ -3472,12 +3474,8 @@ v-if 不能跟 v-repeat 和 v-view 一起使用
 	        |- events.js
 	        |- global.js
 	        |- lifecycle.js
-	    |- batcher.js
-	    |- binding.js
-	    |- config.js
-	    |- directive.js
-	    |- emitter.js
-	    |- instance
+
+	    |- instance // 内部，扩展 Vue.prototype
 	        |- bindings.js
 	        	
 	        	setup binding tree with default point
@@ -3493,24 +3491,153 @@ v-if 不能跟 v-repeat 和 v-view 一起使用
 	        
 	        	初始：scope chain, send down upstream change evt
 	        	销毁
-	        	
-	        
-	    |- observe
-	        |- array-augmentations.js
-	        |- object-augmentations.js
-	        |- observer.js
-	    |- parse
-	        |- directive.js
-	        |- expression.js
-	        |- path.js
-	        |- template.js
-	        |- text.js
-	    |- transition
-	        |- css.js
-	        |- js.js
-	        |- transition.js
-	    |- util.js
+
 	    |- vue.js
 	    
 	    	构造
+
+# [be19525]
+
+> path
+
+	parse('a.b[0].c')
+	//=> ["a", "b", "0", "c"]
+
+使用状态机高效的解析出路径 path 中的变量
+
+# [5bff199]
+
+> path and cache
+
+
+LRU 缓存，数据结构用双向链表，以前在腾讯浏览器面试的时候，用数组（线性表）和索引标记 head/tail，估计是数组 splice 性能不好，面试官不是很满意，目测用双向链表性能好很多吧，学习了
+
+# [14d97d4]
+
+> binding
+
+binding树 树映射 data (对象) 
+
+# [69e9154]
+
+> more util refactor, add build banner
+
+mergeOption 场景:
+
+> 对某些属性有特性的策略去 merge，为了使用父类的一些配置
+
+- extend 创建类的时候
+
+		exports.extend = function (extendOptions) {
+		  ...
+		  Sub.options = _.mergeOptions(Super.options, extendOptions)
+
+- 构造初始化的时候
+
+
+		  this.$options = mergeOptions(
+		    this.constructor.options,
+		    options,
+		    this
+		  )
+		 
+# [af194e4]
+
+> expression parser & test
+
+移除了添加 `$parent.` 逻辑，变量前添加 `scope.`
+
+# [c5cb21b]
+
+> test for util
+
+`events` 可以 merge from parent，以前用 Backbone，events 继承要手动折腾，一直很别扭，我喜欢 vue 这样的
+
+
+# [fb1a149]
+
+> working on directive
+
+binding 的树不使用 .childrend = {} 之类的数据结构，直接用 {} 本身表示一颗 binding 树，而 binding 实例的方法都是 `_` 开头，这样很 hack 方便的建立映射树。
+
+此时，从 path 到 binding 的定位就方便了
+
+	var data = {
+		a: {
+			b: x
+		}
+	}
+
+	rootBinding = {
+		_addChild: xx,
+		...// binding private methods
+		a: {// this is binding instance
+			_addChild: xx,
+			...,
+			b: {
+				_addChild: xx,
+				xxx
+			}
+			
+		}
+	}
+
+# [8e710f0]
+
+> add batcher integration to directives
+
+directive 构建机制
+
+		 * @param {String} type
+		 * @param {Node} el
+		 * @param {Vue} vm
+		 * @param {Object} descriptor
+		 *                 - {String} arg
+		 *                 - {String} expression
+		 *                 - {Array<Object>} filters
+		 * @constructor
+		 */
+		
+		function Directive (type, el, vm, descriptor)
+
+一个指令可能涉及多个 paths (一个 path 理解成一个变量访问)
+
+首先解析 expression 中的 paths 然后对每个 path 创建 binding，自己（指令）订阅这些 bindings
+
+另外，computed 的依赖侦测则是在构造函数最后一步调用一下 get，大致跟原来的差不多，这个过程会有一个临时成员 this._targetDir，在侦测依赖过程中，所有侦测到的 path 都会创建绑定，并且被 _targetDir 订阅
+
+不足：用于 collectDeps 的 get 事件并没有动态的注册，而是 vm 初始化的时候就注册了这个事件
+
+# [abf6bda]
+
+> optimize expression parser for simple path scenarios
+
+关于 path 几种类型和解析
+
+- a.b.c
+
+这种简单的就直接 Path.compileGetter(['a', 'b', 'c'])
+
+- a['b'].c
+
+有 [x] 这种的，需要状态机解析 Path.parse("a['b'].c") 
+
+- a + b.c + c
+
+带运算的表达式则用到 expression path，
+
+注意，所有路径解析入口都是 expression.parse, 返回的 getter 中 getter.paths 只包含是首级变量 (['a', 'c'])，所有情况都是
+
+为啥需要这部分"首级"变量? 对于注释的这段话也不理解
+
+	 * e.g. in "a && a.b", if `a` is not present at compilation,
+	 * the directive will end up with no dependency at all and
+	 * never gets updated.
+
+# [763f2b6]
+
+> separate directive & watcher implementation
+
+
+
 
