@@ -3634,10 +3634,11 @@ directive 构建机制
 	 * the directive will end up with no dependency at all and
 	 * never gets updated.
 
-# [763f2b6]
+# [d3846f6]
 
-> separate directive & watcher implementation
+> keep-alive option for v-component
 
+v-component 对应的 vm，在隐藏或者切换的时候不销毁 vm，缓存起来
 
-
+不足：销毁的时候要把缓存的 vm 也销毁，另外最好给 vm 标记一下是否被使用，免得销毁错了
 
