@@ -3642,3 +3642,167 @@ v-component 对应的 vm，在隐藏或者切换的时候不销毁 vm，缓存�
 
 不足：销毁的时候要把缓存的 vm 也销毁，另外最好给 vm 标记一下是否被使用，免得销毁错了
 
+
+# [7aa2bab]
+
+> v-repeat diff
+
+很赞的一点，考虑了动画过程可能存在页面但是实际要忽略的 dom 元素，基于 vm.__vue__ 标识一个 dom 是否是一个有效的 vm root el
+
+# [6985f06]
+
+> attached/detached hook logic
+
+		exports.$mount = function (el) {
+		  ...
+		  this._compile()
+		  ...
+  		  this.$once('hook:attached', function () {
+		    ...
+		    this._initDOMHooks()
+		  })
+		  // 有些动画中导致可能还没插入？
+		  if (_.inDoc(this.$el)) {
+		    this._callHook('attached')
+		  }
+		}
+	
+父元素 attach 之后保证（动画中）的子孩子后续 attach 后也能更新 isAttached 状态
+	
+		exports._initDOMHooks = function () {
+		  var children = this._children
+		  this.$on('hook:attached', function () {
+		    this._isAttached = true
+		    for (var i = 0, l = children.length; i < l; i++) {
+		      var child = children[i]
+		      if (!child._isAttached && inDoc(child.$el)) {
+		        child._callHook('attached')
+		      }
+		    }
+		  })
+		}
+
+# [d82785e]
+
+> improve text&attr compile
+
+函数式编程，看的好累，图啥？好多 angular 的影子
+
+# [27874ee]
+
+> greatly simplify observe mechanism
+
+原来通过监听数据改变（其实也是自己 emit 的），再去 binding.notify，现在不要自己 emit，直接 notify 完了，简单好多
+
+# [01e6e9e]
+
+> no longer need an internal emitter
+
+组合？继承？呵呵~
+
+想多了，我觉得就是为了省代码量
+
+# [512d265]
+
+> build 0.11.0-rc
+
+捋一把
+
+    |- / api
+        |- child.js
+        	
+        	创建子 vue，原型链指向自身（父亲）
+        
+        |- data.js
+        	
+        	与表达式相关的数据的 get/set/add/delete/eval...
+        
+        |- dom.js
+        
+        	dom操作，某些操作保证在动画完成之后
+        	
+        |- events.js
+        	
+        	不在依赖 emitter
+        
+        |- global.js
+        	
+        	extend, use
+        
+        |- lifecycle.js
+        	
+        	$mount, $destroy
+        	
+    |- / compile
+        |- compile.js
+        	
+        		comiple(el) 返回 function link (vm, el)
+        
+        |- transclude.js
+        
+        		对 v-repeat 的每个block 插入开头结尾占位的 comment 节点
+        		处理 <content>
+
+    |- directives
+        |- attr.js
+        |- class.js
+        |- cloak.js
+        |- component.js
+        |- el.js
+        |- html.js
+        |- if.js
+        |- index.js
+        |- model
+            |- checkbox.js
+            |- index.js
+            |- radio.js
+            |- select.js
+            |- text.js
+        |- on.js
+        |- partial.js
+        |- ref.js
+        |- repeat.js
+        |- show.js
+        |- style.js
+        |- text.js
+        |- transition.js
+        |- with.js
+    |- filters
+        |- array-filters.js
+        |- index.js
+    |- instance
+        |- compile.js
+        |- events.js
+        |- init.js
+        |- scope.js
+    |- observer
+        |- array.js
+        |- index.js
+        |- object.js
+    |- parse
+        |- directive.js
+        |- expression.js
+        |- path.js
+        |- template.js
+        |- text.js
+    |- test.js
+    |- transition
+        |- css.js
+        |- index.js
+        |- js.js
+    |- util
+        |- debug.js
+        |- dom.js
+        |- env.js
+        |- filter.js
+        |- index.js
+        |- lang.js
+        |- merge-option.js
+                
+    |- config.js
+    |- directive.js
+    |- batcher.js
+    |- binding.js
+    |- cache.js
+    |- vue.js
+    |- watcher.js
