@@ -3792,18 +3792,55 @@ v-component 对应的 vm，在隐藏或者切换的时候不销毁 vm，缓存�
         |- js.js
     |- util
         |- debug.js
+        	
+        	log 工具
+        	
         |- dom.js
+        	
+        	原生 dom 操作
+        
         |- env.js
+        	
+        	不同执行环境，兼容性
+        	
         |- filter.js
+        	
+        	extract read/write filters, applyFilters
+        
         |- index.js
         |- lang.js
+        	
+        	grammar utils
+        
         |- merge-option.js
+        	
+        	options merge from 
+        		(mixin | parent vm | Self Class | Parent Class)
+        		
+        	1. when Class.extend
+        	2. when instance.init
+        
                 
     |- config.js
     |- directive.js
+    	
+    	watcher 1 ... n dir
+    	watcher.cbs = [dir._update, ..., custom watch func]
+    
     |- batcher.js
+    	
+    	task queue < watcher{id:xx} >
+    	buffer 内多次 push 同一个 watcher 会覆盖
+    
     |- binding.js
+    	
+    	{{one exp}} 1 ... 1 binding ... n dir
+    	binding.notify ---> each dir.update
+    
     |- cache.js
+    	
+    	双向链表 LRU
+    
     |- vue.js
     	
     	extend Vue, Vue.prototpye，def `$data`
