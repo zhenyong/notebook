@@ -3805,4 +3805,19 @@ v-component 对应的 vm，在隐藏或者切换的时候不销毁 vm，缓存�
     |- binding.js
     |- cache.js
     |- vue.js
+    	
+    	extend Vue, Vue.prototpye，def `$data`
+    
     |- watcher.js
+    
+		    .................. < ....................
+		    v                                        .
+		    .                                        ^
+		watcher run ......                           .
+		    .            .                           .
+		    .            v                           .
+		watcher-----|    .                       when change
+		            |-- cbs                          .
+		            |-- deps...n |-- bindingA --|    .
+		                         |-- bindingB --|.. >  
+		                         |-- bindingC --|
