@@ -3773,23 +3773,106 @@ v-component 对应的 vm，在隐藏或者切换的时候不销毁 vm，缓存�
     |- instance
         |- compile.js
         |- events.js
+        	
+        	事件机制，检查孩子 attached
+        
         |- init.js
+        	
+        	入口
+        
         |- scope.js
+        
+        	_initData:
+        		proxy, new observe and link self (vm)
+        		
+        	_initComputed:
+        		def {get:x,set:x}
+        		
+        	_initMethods: 
+        		proxy methods with content this
+        	
+        	_initMeta:
+        		deps, notify
+        	
+        	_setData
+        		unproxy, unVm old data
+        		proxy new key, observe new Data and link vm (self)
+        	
+        	_digest
+        		某一个节点更新，所有子节点都要 digest
+        	
+        
     |- observer
         |- array.js
+        	
+        	intercept, $remove/$set
+        
         |- index.js
+        
+        	每个对象/数组创建一个 Observer，对 {} 下每个 key 定义 getter/setter，
+        
         |- object.js
+        
+        	$add: convert, vm proxy and digest or just ob.notify
+        	
+        	$delete
+        	
+        	var obj = {name:'peter'} 
+			var china = {a:obj}
+			var us = {a:obj}
+			
+			usVm {
+			    a: obj
+			}
+			
+			chinaVm {
+			    a:obj
+			}
+			
+			
+			obj ... ob  |- bindings : [us.a, china.a]
+			            |- vms: [usVm, chinaVm]
+			
+			当 obj.$add sth，需要 vms 中 每个 vm 代理获取、触发 vm 下每个 watcher 更新        	
+        
     |- parse
         |- directive.js
+        	
+        	流解析成 dirs = [{expression:xx,filters:{xx}}, ...]
+        
         |- expression.js
+        	
+        	解析表达式，返回 {get:xx, set:xx}
+        
         |- path.js
+        	
+        	将一个变量表达式解析
+        	x.y.z
+        	keys = [x,y,z], 
+        	make getter keys.get
+        
         |- template.js
+        	
+        	将所有能代表模板的东西转化为 DocumentFragment
+        
         |- text.js
+        
+        	文本中多个绑定变量或者字面字符串解析成 tokens=[{},...]
+        
     |- test.js
     |- transition
         |- css.js
+        	
+        	css 动画
+        
         |- index.js
+        
+        	考虑了动画事件的 dom 操作（如：动画结束后再移除）
+        
         |- js.js
+        	
+        	自定义 enter/leave
+        
     |- util
         |- debug.js
         	
