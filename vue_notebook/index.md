@@ -3748,6 +3748,9 @@ v-component 对应的 vm，在隐藏或者切换的时候不销毁 vm，缓存�
         |- class.js
         |- cloak.js
         |- component.js
+        	
+        	优先级高过 if, 内部会处理掉 if
+        
         |- el.js
         |- html.js
         |- if.js
@@ -3761,17 +3764,59 @@ v-component 对应的 vm，在隐藏或者切换的时候不销毁 vm，缓存�
         |- on.js
         |- partial.js
         |- ref.js
+        	
+        	指定一个名称，让父亲访问当前 vm
+        
         |- repeat.js
+        	
+        	cache 三中方式 
+        	
+        	1. with data key 'name'
+        	
+        		// [{name:'peter'}]	
+        		this.cache['peter'] = vmInstance
+        		
+        	2. no data key
+        	
+        		// [{name:'peter'}]
+        		{name:'peter', repeatRandomId: vmInstance}
+        	
+        	3. primate value
+        	
+        		this.cache[data] =[vmInstance, vmInstance2, ...]
+        		//TODO 不明白
+        		
+        	
+        
         |- show.js
+        	
+        	考虑了动画
+        
         |- style.js
         |- text.js
         |- transition.js
+        	
+        	just bind:
+        	
+        	this.el.__v_trans = {
+		      id: this.expression
+		    }
+        
         |- with.js
+        	
+        	used on instance (root elements) and (with a parent)
+        	
+        	with="parentKey:childKey"
+        	 	=> watch parent and set child vm
+       
     |- filters
         |- array-filters.js
         |- index.js
     |- instance
         |- compile.js
+        	
+        	
+        
         |- events.js
         	
         	事件机制，检查孩子 attached
@@ -3941,3 +3986,13 @@ v-component 对应的 vm，在隐藏或者切换的时候不销毁 vm，缓存�
 		            |-- deps...n |-- bindingA --|    .
 		                         |-- bindingB --|.. >  
 		                         |-- bindingC --|
+		                         
+
+* get 技能 *
+
+		f = document.createDocumentFragment()
+		f.appendChild(div)
+		div.parentNode //#document-fragment
+
+		document.body.appendChild(f)
+		div.parentNode //body
