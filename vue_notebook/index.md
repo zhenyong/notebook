@@ -3995,4 +3995,51 @@ v-component 对应的 vm，在隐藏或者切换的时候不销毁 vm，缓存�
 		div.parentNode //#document-fragment
 
 		document.body.appendChild(f)
-		div.parentNode //body
+		div.parentNode //
+		
+
+# [d2cba9a]
+	
+> tests for v-partial
+
+{{>partialId}} 经过 compileText
+
+		el = document.createComment('v-partial')
+		token.type = 'partial'
+		token.def = dirs.partial
+		token.descriptor = dirParser.parse(value)[0]
+
+partial 指令在调用 comiple 的时候不需要解析 paramsAttribute，因为不会有的
+
+[d4578da]
+
+> refactor CSS transition handling
+
+原来的代码会有个晦涩的地方，reflow 和 操作之间的时机不好捋顺，现在清晰多了
+
+# [792c139]
+
+> Irefactor transclusion logic
+
+trancluded content link parent vm
+
+
+use case:
+
+			<div>
+			<the-component>
+				<div v-sth="link to parent">
+					this is trancluded content (div)
+				</div>
+			</the-component>
+			</div>
+
+
+component template:
+
+		<div><content></content></div>
+		
+其中 trancluded content 编译的到的指令会存在父亲指令数组中，所以 the-component 销毁的时候还要考虑销毁父亲中的一些指令
+
+> 0.11.x 主要解决 transcluded 导致的相关问题，目前代码还是很多小分支，等后面重构后再捋一下吧
+
