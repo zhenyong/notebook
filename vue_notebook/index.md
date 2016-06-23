@@ -4043,3 +4043,185 @@ component template:
 
 > 0.11.x 主要解决 transcluded 导致的相关问题，目前代码还是很多小分支，等后面重构后再捋一下吧
 
+# [d8e9e2e]
+> [release] 1.0.0
+	
+	|- src
+	    |- api
+	        |- data.js
+	        |- dom.js
+	        |- events.js
+	        |- global.js
+	        |- lifecycle.js
+	    |- compiler
+	        |- compile-props.js
+	        	
+	        	compileProps (el, propOptions)
+	        	//=> propsLinkFn (vm, scope)
+	        
+	        |- compile.js
+	        
+	        	compileElement (el, options)
+	        		//1 check terminal directives (for & if)
+	        		//2 check element directives
+	        		//3 check component
+	        		//4 normal directives
+	        		//return linkFn
+	        
+	        	compileTextNode (node, options)
+	        		//return makeTextNodeLinkFn(tokens, frag, options)
+	        
+	        	processTextToken (token, options)
+	        		//return el
+	        
+	        	makeTextNodeLinkFn (tokens, frag)
+	        		//return textNodeLinkFn (vm, el, host, scope)
+	        
+	        	compileNodeList (nodeList, options)
+	        		//return makeChildLinkFn(linkFns)
+	        
+	        	makeChildLinkFn (linkFns)
+	        		//return childLinkFn (vm, nodes, host, scope, frag)
+	        
+	        	checkElementDirectives (el, options)
+	        		//return makeTerminalNodeLinkFn(el, tag, '', options, def)
+	        	
+	        	checkComponent (el, options)
+	        		//return componentLinkFn (vm, el, host, scope, frag)
+	        
+	        	checkTerminalDirectives (el, options)
+	        		//return makeTerminalNodeLinkFn(el, dirName, value, options)
+	        
+	        	makeTerminalNodeLinkFn (el, dirName, value, options, def)
+	        		//return terminalNodeLinkFn (vm, el, host, scope, frag)
+	        
+	        	compileDirectives (attrs, options)
+	        		//1 if tokens, use 'bind' dir
+	        		//2 'transition'
+	        		//3 'on'
+	        		//4 :style :class
+	        		//5 bind
+	        		//6 v-xxx
+	        		//return makeNodeLinkFn(dirs)
+	        		
+	        	parseModifiers (name)
+	        	
+	        	makeNodeLinkFn (directives)
+					//return nodeLinkFn (vm, el, host, scope, frag)
+	        	
+	        
+	        |- index.js
+	        |- transclude.js
+	    |- directives
+	        |- element
+	            |- index.js
+	            |- partial.js
+	            |- slot.js
+	        |- internal
+	            |- class.js
+	            |- component.js
+	            |- index.js
+	            |- prop.js
+	            |- style.js
+	            |- transition.js
+	        |- public
+	            |- bind.js
+	            |- cloak.js
+	            |- el.js
+	            |- for.js
+	            |- html.js
+	            |- if.js
+	            |- index.js
+	            |- model
+	                |- checkbox.js
+	                |- index.js
+	                |- radio.js
+	                |- select.js
+	                |- text.js
+	            |- on.js
+	            |- ref.js
+	            |- show.js
+	            |- text.js
+	    |- filters
+	        |- array-filters.js
+	        |- index.js
+	    |- fragment
+	        |- factory.js
+	        |- fragment.js
+	    |- instance
+	        |- events.js
+	        |- init.js
+	        |- lifecycle.js
+	        |- misc.js
+	        |- state.js
+	    |- observer
+	        |- array.js
+	        |- dep.js
+	        |- index.js
+	    |- parsers
+	        |- directive.js
+	        |- expression.js
+	        |- path.js
+	        |- template.js
+	        |- text.js
+	    |- transition
+	        |- index.js
+	        |- queue.js
+	        |- transition.js
+	    |- util
+	        |- component.js
+	        |- debug.js
+	        |- dom.js
+	        |- env.js
+	        |- index.js
+	        |- lang.js
+	        |- options.js
+	    |- config.js
+	    |- directive.js
+	    |- batcher.js
+	    |- cache.js
+	    |- vue.js
+	    	o
+	    |- watcher.js
+	    |- test.js
+
+
+
+	_compile
+		|---> compiler.transclude
+		
+				获得 options._containerAttrs 从最初 el
+				if el is template
+					make el = frag
+					
+				if as component, at least make sure 
+					options.template = '<slot></slot>'
+					
+				if options.template
+					options._content = _.extractContent(el)
+									//tag wrapping el nodechilds
+									
+					el = transcludeTemplate(el)
+								|--->
+									if may be blocks at last
+										//return frag
+										
+									if must be one block
+										collect options._replacerAttrs
+										
+										//replacer is single top node 
+										//in options.template
+										
+										//merge origin el attr to replace
+										//return replace
+										
+									
+				if el is frag now (blocks)
+					v-start
+					...el
+					v-end								
+		|---> this._initElement
+				
+				assign _isFragment, $el, ...
+	
+		|---> compiler.compileRoot(el, options, contextOptions
