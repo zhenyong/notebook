@@ -4049,8 +4049,37 @@ component template:
 	|- src
 	    |- api
 	        |- data.js
+	        
+	        	$get (exp, asStatement)
+	        
+	        	$set (exp, val)
+	        
+	        	$delete (key)
+	        
+	        	$watch (expOrFn, cb, options)
+	        
+	        	$eval (text, asStatement)
+	        
+	        	$interpolate (text)
+	        
+	        	$log (path) 
+	        
+	        	clean (obj)
+	        	
 	        |- dom.js
+	        	
+	        	$appendTo (target, cb, withTransition)
+				...
+	        
 	        |- events.js
+	        	
+	        	$on
+				$once
+				$off
+				$emit
+				$broadcast
+				$dispatch
+	        
 	        |- global.js
 	        |- lifecycle.js
 	    |- compiler
@@ -4061,6 +4090,21 @@ component template:
 	        
 	        |- compile.js
 	        
+	        	compile (el, options, partial)
+	        
+	        	linkAndCapture (linker, vm)
+	        
+	        	makeUnlinkFn (vm, dirs, context, contextDirs) {
+				  //return unlink (destroying)
+	        
+	        	teardownDirs (vm, dirs, destroying)
+	        
+	        	compileAndLinkProps (vm, el, props, scope)
+	        		//return makeUnlinkFn(vm, propDirs)
+	        
+	        	compileRoot (el, options, contextOptions)
+					//retur rootLinkFn (vm, el, scope)
+					        
 	        	compileElement (el, options)
 	        		//1 check terminal directives (for & if)
 	        		//2 check element directives
@@ -4112,6 +4156,15 @@ component template:
 	        
 	        |- index.js
 	        |- transclude.js
+	        
+	        	transclude (el, options)
+	        
+	        	transcludeTemplate (el, options)
+	        
+	        	extractAttrs (el)
+	        	
+	        	mergeAttrs (from, to)
+	        
 	    |- directives
 	        |- element
 	            |- index.js
