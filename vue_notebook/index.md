@@ -4081,7 +4081,17 @@ component template:
 				$dispatch
 	        
 	        |- global.js
+	        	
+	        	extend (extendOptions)
+	        	use (plugin)
+	        	mixin (mixin)
+	        
 	        |- lifecycle.js
+	        
+	        	$mount (el)
+	        	$destroy (remove, deferCleanup)
+	        	$compile (el, host, scope, frag)
+	        
 	    |- compiler
 	        |- compile-props.js
 	        	
@@ -4203,10 +4213,38 @@ component template:
 	        |- fragment.js
 	    |- instance
 	        |- events.js
+	        	
+	        	_initEvents ()
+	        	registerComponentEvents (vm, el)
+	        	registerCallbacks (vm, action, hash)
+	        	register (vm, action, key, handler, options)
+	        	_initDOMHooks ()
+	        	_callHook (hook)
+	        	onAttached ()
+	        	onDetached ()
+	        
 	        |- init.js
 	        |- lifecycle.js
+	        	
+	        	
+	        
 	        |- misc.js
+	        
+	        	_applyFilters (value, oldValue, filters, write)
+	        	_resolveComponent (id, cb)
+	        
 	        |- state.js
+	        	
+	        	_initState()
+				_initProps()
+				_initMeta()
+				_initMethods()
+				_initData()
+				_initComputed()
+				_proxy(key)
+				_unproxy(key)
+				_digest()
+	        
 	    |- observer
 	        |- array.js
 	        |- dep.js
@@ -4278,3 +4316,5 @@ component template:
 				assign _isFragment, $el, ...
 	
 		|---> compiler.compileRoot(el, options, contextOptions
+
+
