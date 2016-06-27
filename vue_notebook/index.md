@@ -4318,3 +4318,51 @@ component template:
 		|---> compiler.compileRoot(el, options, contextOptions
 
 
+# [bcc1047]
+
+> compiler: handle adjacent text nodes, fix interpolation issues in IE
+
+* get 技能 *
+
+		<p> first text node &lt;a>remoave this a&lst/a> last text node </p>
+		
+		移除 <a> 标签之后
+		
+		<p> first text node last text node </p>
+		
+		看上去 <p> 的 firstChild 就是整个文本节点，实际上有两个节点
+		
+		p.firstChild.nodeValue == 'first text node'
+		p.firstChild.wholeText == 'first text node last text node'
+		
+
+# [b7e83e6]
+
+> [release] 1.0.10
+
+捋一下工程构建
+
+## test
+
+	npm run lint && npm run cover && npm run build && npm run e2e
+
+
+	    
+## build
+
+	node build/build.js",
+
+
+## xxx
+
+	    "install-hook": "ln -s ../../build/git-hooks/pre-commit .git/hooks/pre-commit",
+	    "dev": "webpack --watch --config build/webpack.dev.config.js & npm run serve-test",
+	    "serve-test": "webpack-dev-server --config build/webpack.test.config.js",
+	    "build-test": "webpack --config build/webpack.test.config.js",
+	    "lint": "eslint src/** test/e2e/** test/unit/specs/** build/**.js",
+	    "e2e": "casperjs test --concise ./test/e2e",
+	    "unit": "karma start build/karma.unit.config.js",
+	    "cover": "karma start build/karma.cover.config.js",
+	    "sauce": "karma start build/karma.sauce.config.js",
+	    "sauce-all": "npm run sauce && npm run sauce -- 1 && npm run sauce -- 2",
+	    "release": "bash build/release.sh"
