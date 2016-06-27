@@ -4342,10 +4342,136 @@ component template:
 
 捋一下工程构建
 
+一些命令行能解决的直接使用命令工具，例如 `eslint` `casperjs`
+
+其他流程都通过 karma 启动
+
+## 配置
+
+- webpack.test.config.js
+
+		module.exports = {
+		// 入口文件
+		  entry: './test/unit/specs/index.js',
+		  
+		// 编译处理后输出文件
+		  output: {
+		    path: path.resolve(__dirname, '../test/unit'),
+		    filename: 'specs.js'
+		  },
+		  
+		// 对 require 的加载路径『重定向』基路径为绝对路径
+		  resolve: {
+		    alias: {
+		      src: path.resolve(__dirname, '../src')
+		    }
+		  },
+		  module: {
+		    loaders: [
+		      {
+		        test: /\.js$/,
+		        loader: 'babel',
+		        // NOTE: use absolute path to make sure
+		        // running tests is OK even if it is in node_modules of other project
+		        exclude: [
+		          path.resolve(__dirname, '../test/unit'),
+		          path.resolve(__dirname, '../node_modules')
+		        ]
+		      }
+		    ]
+		  },
+		  babel: {
+		    loose: 'all',// 更加 es5，兼容老浏览器
+		    optional: ['runtime']// 代码运行时需要一些 babel helper 之类的
+		  },
+		  plugins: [
+		  // 定义环境变量，运行时很多根据 开发/生成 环境
+		    new webpack.DefinePlugin({
+		      'process.env': {
+		        NODE_ENV: '"development"'
+		      }
+		    })
+		  ],
+		  // web-dev-server 配置，热替换的静态服务器
+		  devServer: {
+		    contentBase: './test/unit',
+		    noInfo: true
+		  },
+		  // 编译的时候生成 sourcemap
+		  devtool: 'source-map'
+		}
+
+- webpack.cover.config.js
+
+		var assign = require('object-assign')
+		var base = require('./karma.base.config.js')
+		
+		module.exports = function (config) {
+		  var options = assign(base, {
+		    browsers: ['PhantomJS'],
+		    reporters: ['progress', 'coverage'],
+		    coverageReporter: {
+		      reporters: [
+		        { type: 'lcov', dir: '../coverage', subdir: '.' },
+		        { type: 'text-summary', dir: '../coverage', subdir: '.' }
+		      ]
+		    }
+		  })
+		
+		// 编译打包后，使用 istanbul 进行单元测试覆盖，处理源代码
+		  // add coverage post loader
+		  options.webpack.module.postLoaders = [
+		    {
+		      test: /\.js$/,
+		      exclude: /test|node_modules/,
+		      loader: 'istanbul-instrumenter'
+		    }
+		  ]
+		
+		  config.set(options)
+	}
+
+
+- webpack.base.config.js
+
+> 后续配置都是继承这个配置
+
+	var webpackConfig = require('./webpack.test.config')
+	delete webpackConfig.entry
+	webpackConfig.devtool = 'inline-source-map'
+	
+	// shared config for all unit tests
+	module.exports = {
+	  frameworks: ['jasmine'],
+	  files: [
+	    '../test/unit/lib/jquery.js',
+	    '../test/unit/specs/index.js'
+	  ],
+	  preprocessors: {
+	    '../test/unit/specs/index.js': ['webpack', 'sourcemap']
+	  },
+	  webpack: webpackConfig,
+	  webpackMiddleware: {
+	    noInfo: true
+	  },
+	  singleRun: true
+	}
+
+- webpack.unit.config.js
+
+浏览器单元测试咯
+
+
+- build.js
+
+使用 rollup 构建发布文件，打包出来的代码简洁可调试
+
+
+
+
 ## test
 
 	npm run lint && npm run cover && npm run build && npm run e2e
-
 
 	    
 ## build
@@ -4353,16 +4479,47 @@ component template:
 	node build/build.js",
 
 
-## xxx
+##install-hook
 
-	    "install-hook": "ln -s ../../build/git-hooks/pre-commit .git/hooks/pre-commit",
-	    "dev": "webpack --watch --config build/webpack.dev.config.js & npm run serve-test",
-	    "serve-test": "webpack-dev-server --config build/webpack.test.config.js",
-	    "build-test": "webpack --config build/webpack.test.config.js",
-	    "lint": "eslint src/** test/e2e/** test/unit/specs/** build/**.js",
-	    "e2e": "casperjs test --concise ./test/e2e",
-	    "unit": "karma start build/karma.unit.config.js",
-	    "cover": "karma start build/karma.cover.config.js",
-	    "sauce": "karma start build/karma.sauce.config.js",
-	    "sauce-all": "npm run sauce && npm run sauce -- 1 && npm run sauce -- 2",
-	    "release": "bash build/release.sh"
+        ln -s ../../build/git-hooks/pre-commit .git/hooks/pre-commit",
+
+##dev
+
+        webpack --watch --config build/webpack.dev.config.js & npm run serve-test",
+
+##serve-test
+
+        webpack-dev-server --config build/webpack.test.config.js
+
+##build-test
+
+        webpack --config build/webpack.test.config.js
+
+##lint
+
+        eslint src/** test/e2e/** test/unit/specs/** build/**.js
+
+##e2e
+
+        casperjs test --concise ./test/e2e
+
+##unit
+
+        karma start build/karma.unit.config.js
+
+##cover
+
+        karma start build/karma.cover.config.js
+
+##sauce
+
+        karma start build/karma.sauce.config.js
+
+##sauce-all
+
+        npm run sauce && npm run sauce -- 1 && npm run sauce -- 2
+        
+##release
+
+        
+        bash build/release.sh
