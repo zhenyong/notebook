@@ -4459,7 +4459,7 @@ component template:
 
 - webpack.unit.config.js
 
-浏览器单元测试咯
+浏览器单元测试咯，之前把所有 spec/**/*.js 打包成 spec/
 
 
 - build.js
@@ -4523,3 +4523,24 @@ component template:
 
         
         bash build/release.sh
+     
+# [59230fe]
+
+> [release] 2.0.0-alpha.5
+
+看下 2.0 的套路
+
+## 入口
+
+    |- web-compiler.js // web 环境只有编译器
+    |- web-runtime-with-compiler.js // 就是 1.x 那样
+    |- web-runtime.js	// web，不带编译器，可以理解为全都 linker 的 1.x
+    |- web-server-renderer.js // 服务端渲染
+    
+## parse 算法
+
+> html => ast
+
+### html-parser
+
+
