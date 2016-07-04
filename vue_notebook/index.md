@@ -4543,4 +4543,21 @@ component template:
 
 ### html-parser
 
+这不就是 jq 作者实现的！
 
+## core
+
+## /instance/render
+
+### renderMixin
+
+混入实例方法，下面是各种 render 相关的方法
+
+- _h = renderElementWithChildren
+- _e = renderElement
+- _t = renderText
+- _m = renderStatic
+- _f = return resolveAsset(this.$options, 'filters', id, true)
+- _l //render v-for
+- _b //apply v-bind object, push to props / attrs
+- 
