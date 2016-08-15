@@ -2,7 +2,7 @@
 
 - 切换
 
-	* cmd + tab 
+	* cmd + tab
 		* tab 向右切换
 		* ～ 向左切换
 		* 松开前，摁住 option 可以把最小化的窗口打开
@@ -17,7 +17,7 @@
 	* cmd + M 最小化窗口，四指切换程序可见
 	* cmd + W 关闭当前窗口
 	* cmd + Q 退出当前程序
-	
+
 - 截图
 
 	* cmd + shift +3 全屏
@@ -25,7 +25,7 @@
 		* space 进入窗口模式
 		* 选择范围松开鼠标前，shift（切换） 锁定 X/Y 轴
 		* 选择范围松开鼠标前，option 锁定圆心
-	
+
 	截图时摁住 control 则进入剪贴板
 
 ## bash 文件
@@ -63,12 +63,12 @@ https://github.com/robbyrussell/oh-my-zsh
 ### ssh 设置登录别名
 
 ~/.ssh/config 文件写入
-	
+
 	Host theName
    		HostName xx.xx.xx.xx
    		Port 22
    		User root
-   	
+
 之后就可以 ssh theName 快速登录了
 
 ### 设置默认打开方式
@@ -83,11 +83,19 @@ https://github.com/robbyrussell/oh-my-zsh
 	```
 	ln -f -s /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl /usr/local/bin/
 	```
-	
+
 2. 当命令行需要文本窗口输入时，默认使用 sublime
 
 	```
-	echo "EDITOR='subl -w'" >> ~/.bash_profile 
+	echo "EDITOR='subl -w'" >> ~/.bash_profile
 	```
 
 btw：查看 sublime 参数 用 subl -help 命令
+
+### 给自带词典添加离线字典
+
+[导入工具](https://github.com/jjgod/mac-dictionary-kit)
+[字典列表](http://abloz.com/huzheng/stardict-dic/zh_CN/)
+
+在字典列表下载离线字典，然后打开导入工具，把字典文件拖入，
+然后在词典软件的 preference (偏好设置)把新增的字典勾选。
