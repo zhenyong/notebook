@@ -82,3 +82,4 @@ Git            | >>
 `Cmd+W`                      | 关闭当前 Tab
 `Ctrl+Shift+M`               | 预览 Markdown
 `Alt+Cmd+I` | 调出控制台
+`Cmd+Shift+\` | reveal in treeview
