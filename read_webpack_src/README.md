@@ -5,7 +5,7 @@ webpack 源码从头到尾
 
 > Initial commit
 
-## webpack 加载器解析
+## webpack 加载器剖析
 
 源码长这样:
 
@@ -150,6 +150,8 @@ function requireEnsure(chunkId, callback) {
 ```
 
 ### webpack.js
+
+基于 `buildDeps.js` 解析构建的模块树，写文件，对于 `chunkId` 为 0 的入口文件，会写入 webpack 加载器的相关代码，使用 `wirteChunk` 和 `wirteSource` 写入 chunk 文件
 		
 ### resolve.js
 
@@ -295,7 +297,23 @@ buildDeps(context, mainModule, options, callback) {
 3. chunk 之间的 "父子" 关系
 4. chunk 的上下文信息，对应 入口模块 / 分割 ，前者为入口模块 parse 后的信息，后者为 `asyncs` 中的一个元素
 
-### 
+### wirteChunk
+
+遍历 `chunk` 中 include 的 modules，将模块逐个 chunk 中，下面就是一个 module 的轮廓，其中 module 的代码内容则用 `writeSource.js` 写入
+
+```
+/******/
+/******/2: function(module, exports, require) {
+
+// writeSource.js 
+
+/******/},
+/******/
+```
+
+### writeSource
+
+主要是将 `require('xx')` 中的模块名替换为 module.id，将 `require.ensure` 异步加载的分块（模块）名替换为 chunkId
 
 
 ## 涨姿势
