@@ -28,6 +28,9 @@
 
 	截图时摁住 control 则进入剪贴板
 
+- 屏幕放大缩小
+	
+	* 摁住 control + 双指触屏滑动	
 ## bash 文件
 
 file  | means
