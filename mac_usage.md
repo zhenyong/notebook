@@ -62,6 +62,20 @@ https://github.com/robbyrussell/oh-my-zsh
 	echo "export PATH=xxxxxx:$PATH" >> ~/.bash_profile'
 	```
 
+## 剪贴板
+
+- 复制内容到剪贴板
+
+	```
+	pbcopy < in.txt
+	```
+
+- 输出剪贴板内容
+
+	```
+	pbpaste >> out.txt
+	```
+
 ## 我要
 
 ### ssh 设置登录别名
