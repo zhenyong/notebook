@@ -10,3 +10,7 @@
 - [List of Chromium Command Line Switches « Peter Beverloo](http://peter.sh/experiments/chromium-command-line-switches/)
 
 启动 chrome 时设置 --disable-infobars 参数
+
+## 显示扩展应用的图标
+
+在地址栏后面有个隐藏的 drag bar，往左拖动可以显示扩展的图标
