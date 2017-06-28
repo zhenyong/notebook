@@ -14,3 +14,6 @@
   refers:
   [html - display: inline-block leaves gap with respect to height after div element - Stack Overflow](https://stackoverflow.com/questions/27730680/display-inline-block-leaves-gap-with-respect-to-height-after-div-element)
   
+### 移除元素之间的空白
+
+[Fighting the Space Between Inline Block Elements | CSS-Tricks](https://css-tricks.com/fighting-the-space-between-inline-block-elements/)
