@@ -1,6 +1,6 @@
-### flex:1 下的文字无法 ellipsis
+### flex:1 下的文字无法 ellipsis/overflow:scroll
 
-  上层的所有 flex:1 带上 min-width:0
+  上层的所有 flex:1 带上 min-width:0(ellipsis)  min-height:0(overflow:scroll)
   
   refers:
   - [javascript - text-overflow: ellipsis and flex - Stack Overflow](https://stackoverflow.com/questions/39472747/text-overflow-ellipsis-and-flex)
