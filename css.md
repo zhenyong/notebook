@@ -17,3 +17,7 @@
 ### 移除元素之间的空白
 
 [Fighting the Space Between Inline Block Elements | CSS-Tricks](https://css-tricks.com/fighting-the-space-between-inline-block-elements/)
+
+### 宽高等比
+
+padding-top/padding-bottom 设置百分比是根据宽度的，所以设置元素 `padding-top  3/4*100%` 表示宽高比 4:3
