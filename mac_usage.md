@@ -140,6 +140,3 @@ ctrl + 双指下滑
 	+ 命令行 top，找到 pid
 	+ q 退出
 	+ kill <pid>
-	
-ctrl + 双指下滑三
-ctrl + 双指下滑
