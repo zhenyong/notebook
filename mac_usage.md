@@ -130,3 +130,16 @@ btw：查看 sublime 参数 用 subl -help 命令
 ### 屏幕内容不小心放大，溢出屏幕
 
 ctrl + 双指下滑
+
+
+### 强制关闭
+
+- 方式一：Cmd + Alt + Esc 关闭
+- 方式二：打开 Activity Monitor 选中，点击关闭按钮
+- 方式三：
+	+ 命令行 top，找到 pid
+	+ q 退出
+	+ kill <pid>
+	
+ctrl + 双指下滑三
+ctrl + 双指下滑
