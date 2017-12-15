@@ -139,4 +139,4 @@ ctrl + 双指下滑
 - 方式三：
 	+ 命令行 top，找到 pid
 	+ q 退出
-	+ kill <pid>
+	+ kill \<pid>
