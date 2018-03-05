@@ -346,4 +346,36 @@ asset 解析出来的结果通过文件缓存，策略就是文件名作 key，�
 * Packager 管理 AST 之后的代码组织规则
 * Bundler 就是构建工具的执行入口类
 
-## 
+## 1bbb98d Don’t package an empty bundle
+
+## 1dc5ce4 Generate asset and bundle hashes
+
+- assset 的 hash 就是解析后各类型的输出 md5
+- bundle 的 hash 就是各 asset 的 hash 的 md5
+
+## 18beada Refactor bundle tree creation to support code splitting
+
+- 重构创建 bundle 和 asset 树
+- 移动资源到公共 bundle 而非 根 bundle
+
+## e0b4d61 Support dynamic imports
+
+### JSPackager
+
+遇到动态加载的模块，增加依赖，并且把代码中的 `require` 调用替换成 `_bundle_loader`
+
+```
+if (isDynamicImport) {
+  asset.addDependency('_bundle_loader');
+  asset.addDependency(args[0].value, {dynamic: true});
+
+  node.callee = requireTemplate().expression;
+  node.arguments[0] = argTemplate({MODULE: args[0]}).expression;
+  asset.isAstDirty = true;
+}
+```
+
+
+
+
+
