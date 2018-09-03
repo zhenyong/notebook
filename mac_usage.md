@@ -13,20 +13,24 @@
 
 - 窗口
 
-	* cmd + H 隐藏 app，四指切换程序时看不到
-	* cmd + alt + H 只显示当前应用窗口，其他隐藏
-	* cmd + M 最小化窗口，四指切换程序可见
+	* cmd + H 隐藏 app，四指切换程序时看不到（可 tab 切换显示）
+	* cmd + option + H 只显示当前应用窗口，其他隐藏
+	* cmd + option + H + M 最小化所有窗口
+	* cmd + M 最小化当前程序的当前窗口，四指切换程序可见（Tab 切换需要长摁 option）
+	* cmd + option + M 最小化当前程序的所有窗口，四指切换程序可见（Tab 切换需要长摁 option）
+	
+		[在OS X中，最小化窗口（cmd+M）和隐藏窗口(cmd+H）在设计初衷上有何区别？ - Frendo的回答 - 知乎](https://www.zhihu.com/question/19966890/answer/143035156)
+
 	* cmd + W 关闭当前窗口
 	* cmd + Q 退出当前程序
-	* cmd + option + H + M 最小化所有窗口
 
 - 截图
 
 	* cmd + shift +3 全屏
 	* cmd + shift + 4 选定
-		* space 进入窗口模式
-		* 选择范围松开鼠标前，shift（切换） 锁定 X/Y 轴
-		* 选择范围松开鼠标前，option 锁定圆心
+	* space 进入窗口模式
+	* 选择范围松开鼠标前，shift（切换） 锁定 X/Y 轴
+	* 选择范围松开鼠标前，option 锁定圆心
 
 	截图时摁住 control 则进入剪贴板
 
