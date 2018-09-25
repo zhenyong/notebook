@@ -1,5 +1,9 @@
 ## mac 快捷
 
+- 系统
+
+	* 休眠 cmd + ctrl + q
+
 - 切换
 
 	* cmd + tab
