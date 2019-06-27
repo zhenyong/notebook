@@ -1,4 +1,53 @@
-## git diff
+## Story
+
+## 修改前几次的提交信息
+
+```
+git rebase -i 父提交
+```
+
+使用交互式的 rebase 操作，背后就是搞出 detached-Head （理解成 checkout 出某个提交，此时没有分支），然后修改完，refs/heads/master 再指向它，
+这就是当我们要修改某个提交的 message 时，至少需要 rebase 它的父提交
+
+## 查看 暂存区 跟 HEAD 的差异
+
+```
+git diff --cached
+```
+
+## 工作区文件恢复跟暂存区一致
+
+```
+git checkout -- [file]
+```
+
+## 暂存区文件退出暂存
+
+```
+git reset HEAD -- [file]
+```
+
+## 把最近一堆提交干掉
+
+```
+git reset --hard [commit]
+
+git reset --hard HEAD // 暂存区&工作区都恢复跟头指针一样
+```
+
+## 忽然接到紧急任务，手上有改动但是没完成代码怎么办
+
+```
+git stash 当前改动入缓存栈
+git stash apply 只是使用栈顶缓存的改动，但是不出栈
+git stash pop 弹出改动
+git stash list 查看 stash 栈
+```
+
+
+## Command
+
+### git diff
 
 	git diff HEAD
 	// 工作目录与最近一次提交的区别, HEAD 是最近一次提交id的别名
@@ -12,17 +61,17 @@
 	
 	
 
-## git rm
+### git rm
 
 	git rm --cache
 	// 移除对某个文件的管理，但是想把它留在文件夹里
 ---
 
-## git mv
+### git mv
 > 移动
 
 
-## git log
+### git log
 
 	git log --oneline
 	// 提交摘要（id+描述）
@@ -46,7 +95,7 @@
 	
 	
 	
-## git add
+### git add
 
 	git add -A .
 	// 当你在电脑上移动一堆文件，避免手动 rm&add, 批量更新 rename 状态
@@ -61,7 +110,7 @@
 	
 	
 
-## 额~
+### 额~
 
 - 你在文件夹窗口删除了一堆文件，避免手动一个个 `git rm`
 	
