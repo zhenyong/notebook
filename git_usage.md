@@ -44,6 +44,18 @@ git stash pop 弹出改动
 git stash list 查看 stash 栈
 ```
 
+## 备份本地仓库
+
+```
+git clone --bare file:///本地仓库路径/.git  备份目标路径.git
+```
+
+这样创建的裸仓库没有工作区（就是没有源文件），之后把这个 备份目标路径.git 作为一个远程仓库，push 到这个备份.git
+
+```
+git remote add backup 备份目标路径.git
+```
+
 
 ## Command
 
@@ -56,9 +68,6 @@ git stash list 查看 stash 栈
 	git diff -stat
 	// 更改过的文件列表和 diff 总览
 ---
-	
-	
-	
 	
 
 ### git rm
