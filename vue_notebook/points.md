@@ -13,6 +13,8 @@ function Vue (options) {
 
 ## 运行时的性能监控
 
+[Performance - Web API 接口参考 | MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/Performance)
+
 ```javascript
 Vue.prototype.$mount = function (
   el?: string | Element,
