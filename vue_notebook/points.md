@@ -10,3 +10,39 @@ function Vue (options) {
   this._init(options)
 }
 ```
+
+## 运行时的性能监控
+
+```javascript
+Vue.prototype.$mount = function (
+  el?: string | Element,
+  hydrating?: boolean
+): Component {
+//...
+mark('compile')
+const { render, staticRenderFns } = compileToFunctions(template, {
+//...
+mark('compile end')
+measure(`vue ${this._name} compile`, 'compile', 'compile end')
+//...
+}
+
+
+const perf = inBrowser && window.performance
+if (
+  perf &&
+  perf.mark &&
+  perf.measure &&
+  perf.clearMarks &&
+  perf.clearMeasures
+) {
+  mark = tag => perf.mark(tag)
+  measure = (name, startTag, endTag) => {
+    perf.measure(name, startTag, endTag)
+    perf.clearMarks(startTag)
+    perf.clearMarks(endTag)
+  }
+}
+
+
+```
