@@ -9,7 +9,7 @@ export function foo<T>(
 // 2
 export function foo<T>(
     object: T
-)
+): void
 
 class Person {}
 const obj = {}
