@@ -55,3 +55,7 @@ export function render(_ctx, _cache) {
 }
 ```
 
+## feat: auto inject hmr client	4a04d81	Evan You <yyx990803@gmail.com>	2020年4月20日 下午4:45
+
+`parseSFC` 方法默认不走缓存，考虑热更新的场景，如果走缓存就没办法拿到最新的
+
