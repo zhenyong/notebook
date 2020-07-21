@@ -59,3 +59,14 @@ export function render(_ctx, _cache) {
 
 `parseSFC` 方法默认不走缓存，考虑热更新的场景，如果走缓存就没办法拿到最新的
 
+# feat: module rewrite	33488fe	Evan You <yyx990803@gmail.com>	2020年4月20日 下午5:32
+
+变量名带上 __ 前缀
+
+`moduleRewriter.js` 专门改造 sfc-compile 生成的代码:
+`.vue` 返回的 script 不是简单的拼凑，通过 babel/parser 解析，找到 `import` 和 `export default`，对于 import npm 包的，统一改为 '/__modules/xx'
+
+`moduleMiddleware.js` 就是返回 node_module 包的代码
+
+
+
