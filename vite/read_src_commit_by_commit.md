@@ -128,6 +128,13 @@ SIGTERM 程序结束(terminate)信号，与SIGKILL不同的是该信号可以被
 
 所以这里 forceKillAfterTimeout: 2000 就表示，如果 2 秒了， server 进程还没自己正常退出，那就强杀
 
+整个测试的思路就是，准备一个项目
+```
+xx.vue
+main.js
+index.html
+```
+然后拷贝到临时目录，启动 server，用 puppeteer 做 e2e
 
 
 
