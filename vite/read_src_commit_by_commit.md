@@ -74,8 +74,7 @@ export function render(_ctx, _cache) {
 resp 返回文件内容改成 stream
 模块查找基于 cwd 路径
 
-对于 __modules/xx 请求
-eturn moduleMiddleware(pathname.replace('/__modules/', ''), res)
+对于 __modules/xx 请求 return moduleMiddleware(pathname.replace('/__modules/', ''), res)
 
 
 
