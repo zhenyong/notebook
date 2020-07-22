@@ -71,7 +71,9 @@ export function render(_ctx, _cache) {
 ## refactor: use async fs + expose createServer API	bfb4b91	Evan You <yyx990803@gmail.com>	2020年4月21日 上午6:14
 
 读取文件 fs 改成异步
+
 resp 返回文件内容改成 stream
+
 模块查找基于 cwd 路径
 
 对于 __modules/xx 请求 return moduleMiddleware(pathname.replace('/__modules/', ''), res)
