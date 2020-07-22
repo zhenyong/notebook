@@ -78,6 +78,56 @@ resp 返回文件内容改成 stream
 
 对于 __modules/xx 请求 return moduleMiddleware(pathname.replace('/__modules/', ''), res)
 
+## refactor: use TS	91d76bf	Evan You <yyx990803@gmail.com>	2020年4月21日 上午7:13
+
+@npm
+- `npm-run-all` 并行/串行 执行 npm script
+
+ts 配置
+```
+{
+  "compilerOptions": {
+    "sourceMap": false,
+    "target": "esnext",
+    "moduleResolution": "node",
+    
+    "esModuleInterop": true, // 增加一些辅助代码，保证 import default 和 import * 对于 commonjs 代码不会出错
+    
+    "declaration": true, // 生成 d.ts
+    "allowJs": false,
+    
+    "allowSyntheticDefaultImports": true, // false 则：对于没有 export default 的 xx.js ，那么 import x from xx.js 就会报错
+    
+    "noUnusedLocals": true,
+    "strictNullChecks": true, // null和 undefined值不包含在任何类型里，只允许用它们自己和 any来赋值（有个例外， undefined可以赋值到 void）
+    "noImplicitAny": true, // true: 有隐含的 any类型时报错
+    "removeComments": false,
+    "lib": [
+      "esnext",
+      "DOM"
+    ]
+  }
+}
+```
+[typescript - Understanding esModuleInterop in tsconfig file - Stack Overflow](https://stackoverflow.com/questions/56238356/understanding-esmoduleinterop-in-tsconfig-file)
+
+## add tests	e718bd5	Evan You <yyx990803@gmail.com>	2020年4月21日 上午8:57
+
+@npm
+- `execa` 是可以调用shell和本地外部程序的javascript封装。会启动子进程执行。支持多操作系统，包括windows。如果父进程退出，则生成的全部子进程都被杀死
+
+
+
+`test/test.js`
+```
+server.kill('SIGTERM', {
+  forceKillAfterTimeout: 2000
+})
+```
+SIGTERM 程序结束(terminate)信号，与SIGKILL不同的是该信号可以被阻塞和处理。通常用来要求程序自己正常退出。shell命令kill缺省产生这个信号。SIGTERM is the default signal sent to a process by the kill or killall commands.
+
+所以这里 forceKillAfterTimeout: 2000 就表示，如果 2 秒了， server 进程还没自己正常退出，那就强杀
+
 
 
 
