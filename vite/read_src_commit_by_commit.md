@@ -144,7 +144,7 @@ index.html
 - `resolve-from` Resolve the path of a module like require.resolve() but from a given path, 代替 `resolve-cwd`
 - `minimist`轻量命令行参数解析器
 
-`moduleResolver.js`
+### `moduleResolver.js`
 
 增强了  module 查找能力
 
@@ -154,8 +154,23 @@ modulePath = resolve(cwd, `${id}/package.json`)
 
 支持 `.map` soucemap 文件
 
+### `server.js`
+
+createServer 带上 cwd 参数，后续所有跟启动路径相关的地方都传入，这样别的地方就不存在 `process.cwd()`
+
+## refactor types	f4382f1	Evan You <yyx990803@gmail.com>	2020年4月21日 上午11:08
 
 
+`vueCompiler.js` 把 compile script 和 compile template 封装
+
+## feat: style hot reload	140f2b2	Evan You <yyx990803@gmail.com>	2020年4月21日 下午12:37
+
+@npm
+- `hash-sum` blazing fast unique hash generator; 输出一个变量/function，计算 hash
+
+### `watcher.js`
+
+style hotreload 的
 
 
 
