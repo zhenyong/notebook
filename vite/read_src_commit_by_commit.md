@@ -148,7 +148,7 @@ index.html
 
 增强了  module 查找能力
 
-``
+```
 modulePath = resolve(cwd, `${id}/package.json`)
 ```
 
