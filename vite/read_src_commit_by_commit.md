@@ -170,7 +170,33 @@ createServer 带上 cwd 参数，后续所有跟启动路径相关的地方都�
 
 ### `watcher.js`
 
-style hotreload 的
+style hotreload 的处理：
 
+descriptor.styles 前后两次比较，
+- 如果有 `scoped` 改变，则发送 `reload`事件
+- 顺序遍历比较， 如有不同发送 `style-update' 指定索引
+- 新的更长，则旧的部分删除，发送 `style-remove` 指定 `{id: `${hash_sum(resourcePath)}-${i + nextStyles.length}`}`
+
+比较两个 block 是不是一样:
+- 强等于比较
+- keys 长度比较
+- 遍历 keys 比较属性
+
+### `vueCompiler.js`
+
+`compileSFCMain()`
+
+对于有 scoped 的 style block，请求 `.vue` 的代码包含
+```
+import "xxx?type=style&index={i}&${timestap}"
+```
+
+`compileSFCTemplate()`
+
+带上参数 id: `data-v-${id}`, 其中 ${id} 就是请求的 `pathname`
+
+`compileSFCStyle()`
+
+请求 type=style，就编译，拼接创建 style 标签的代码，标签 id 为 `vue-style-${id}-${index}`
 
 
