@@ -199,4 +199,49 @@ import "xxx?type=style&index={i}&${timestap}"
 
 请求 type=style，就编译，拼接创建 style 标签的代码，标签 id 为 `vue-style-${id}-${index}`
 
+## rename	be00e79	Evan You <yyx990803@gmail.com>	2020年4月21日 下午1:04
 
+vds -> vite
+
+## include bin	a47c406	Evan You <yyx990803@gmail.com>	2020年4月21日 下午1:06
+
+package.json
+```
+  "files": [
+    "bin",
+    "dist"
+  ],
+```
+
+指定 npm 包含哪些内容
+
+## ci	c76ca14	Evan You <yyx990803@gmail.com>	2020年4月21日 下午1:21
+
+顺手学了下 circle workflow
+
+`yarn --frozen-lockfile` 表示不生成/修改 yarn.lock
+
+## test: fix puppeteer on ci	97de06e	Evan You <yyx990803@gmail.com>	2020年4月21日 下午1:47
+
+[puppeteer/troubleshooting.md at main · puppeteer/puppeteer](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#setting-up-chrome-linux-sandbox)
+
+
+## fix: use correct vue & compiler-sfc	0d5a2a4	Evan You <yyx990803@gmail.com>	2020年4月21日 下午11:39
+
+vue compiler 也需要从 cwd 用户本地去找，而不是直接从 vite 依赖的 npm 里面加载
+
+## refactor: use koa	c74b24e	Evan You <yyx990803@gmail.com>	2020年4月22日 上午5:01
+
+## use custom history fallback	a307eeb	Evan You <yyx990803@gmail.com>	2020年4月22日 上午5:32
+
+## feat: support import rewriting in index.html	4ed433a	Evan You <yyx990803@gmail.com>	2020年4月22日 上午6:06
+
+支持 index.html 中
+```
+<script>
+import xx from xxx
+<script>
+```
+
+
+ 
