@@ -136,6 +136,24 @@ index.html
 ```
 然后拷贝到临时目录，启动 server，用 puppeteer 做 e2e
 
+## remove git add from lint-staged	3e64a74	Evan You <yyx990803@gmail.com>	2020年4月21日 上午8:58
+
+## properly handle cwd	93286b9	Evan You <yyx990803@gmail.com>	2020年4月21日 上午10:04
+
+@npm
+- `resolve-from` Resolve the path of a module like require.resolve() but from a given path, 代替 `resolve-cwd`
+- `minimist`轻量命令行参数解析器
+
+`moduleResolver.js`
+
+增强了  module 查找能力
+
+``
+modulePath = resolve(cwd, `${id}/package.json`)
+```
+
+支持 `.map` soucemap 文件
+
 
 
 
