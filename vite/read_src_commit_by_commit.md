@@ -268,3 +268,37 @@ vue 编译缓存，检测到文件修改，移除 vue 编译相应缓存
 rewriteImport 作为入口，建立两个map，分别是 <importer, importee> 和 <importee， importer>，方便后面一个 importee 修改了，递归对应 importer 来判断是否要 full reload，目前如果往上递归找到一个没有被依赖的资源，那么 full reload，可以理解成，如果一个依赖树被砍掉一部分，则 full resolve
 
 
+## feat: support resolving snowpack web_modules (#4)	a183791	Israel Roldan <israel@palu.io>	2020年4月23日 下午9:50
+
+snowpack 是将 npm 包映射安装到 web_modules/ 下,
+@TODO 暂时还没懂支持 snowpack 是怎么回事
+
+## refactor: use /@ for special requests	ae3c83a	Evan You <yyx990803@gmail.com>	2020年4月23日 下午10:01
+
+`isHotBoundary` 目前的热更新递归边界就是到一个 **非 .vue** （的js）为止
+
+`hrm.js` 里面的一大段解释：
+
+了解下 webpack 里面热更新相关的 accept 是什么用途
+
+[模块热替换 | webpack](https://webpack.docschina.org/guides/hot-module-replacement/)
+
+例如 index.js 里面 import a.js，那么就在 index.js 里面去 accept(a.js)，因为当 a.js 修改了，a.js 本身是能通知到更新的，那么其它 importer 就需要去声明监听 a.js 的变化
+
+### HMR 工作原理
+
+1. `vue` 文件响应前，会转成 `js` 文件
+2. 所有`.js`文件在响应前，都会经过解析，以便重写最终 import 的模块路径。在这个解析过程，顺便记录了 importer/impotee 的映射关系，用于 HMR 分析
+3. 当一个 `.vue` 文件修改了，直接读取解析，然后通知浏览器，这里 `.vue` 文件本身就能 accept 自己的变化
+4. 当一个 `.js` 文件变化，会触发 HMR 模块关系分析，遍历它的 importer 链，试图找到一个 HMR 边界，这个边界的定义就是看它，有没有声明了 accept，通常 import `@hmr` 的就是声明了 accept。可以这么理解吧，例如 a import b, b import c，当 c 修改，b 成为边界之后，此时先不用考虑 a，因为 a 后续也会成为 b 的边界
+5. 如果 importer 链上不存在一个 HMR boundary，就认为这个模块 "dead end"，你可以理解为，没有模块在意它的变化，那就是死掉了
+6. 如果是 `.vue` boundary，添加到 `vueImports` 集合
+7. 如果是 `.js` boundary，检查它现在的 child importer 是否在这个 boundary 的 accept 列表中，如果是的话，把 child importer 添加到 `jsImporters` 集合
+8. 如果遍历完之后，没有 dead end，通知浏览器更新所有 `jsImporters` 和 `vueImporters`
+
+如何获得 accepted 列表：
+- `import rewrite` 的 `js` 文件的时候，如果存在 `/@hmr` import，那么会完整解析文件，找到 `hot.accept` 调用，然后记录它与 accpeted 依赖关系，保存在 `hmrBoundariesMap`
+- boundary 文件的完整路径也会注入到 `hot.accept` 相关调用代码，后续就可以用完整路径拿到依赖的完整路径
+
+
+
