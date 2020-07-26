@@ -300,5 +300,33 @@ snowpack 是将 npm 包映射安装到 web_modules/ 下,
 - `import rewrite` 的 `js` 文件的时候，如果存在 `/@hmr` import，那么会完整解析文件，找到 `hot.accept` 调用，然后记录它与 accpeted 依赖关系，保存在 `hmrBoundariesMap`
 - boundary 文件的完整路径也会注入到 `hot.accept` 相关调用代码，后续就可以用完整路径拿到依赖的完整路径
 
+### 代码梳理
+
+`client.js`
+
+```
+ export const hot = {
+   accept(
+    importer: string,
+    deps: string | string[],
+    callback: (modules: object | object[]) 
+   ) {
+```
+
+相当于在浏览器注册了 importer 和 deps 的关系，当
+
+@TODO
+
+## feat: js hmr API	3e5076d	Evan You <yyx990803@gmail.com>	2020年4月23日 下午11:16
+
+## feat: vite build	0ea7970	Evan You <yyx990803@gmail.com>	2020年4月24日 上午11:04
+
+## chore: setup changelog	2dba0d0	Evan You <yyx990803@gmail.com>	2020年4月27日 下午11:04
+
+@npm 
+- `conventional-changelog-cli`
+
+## v0.8.0	4ce94b6	Evan You <yyx990803@gmail.com>	2020年5月1日 上午12:18
+
 
 
