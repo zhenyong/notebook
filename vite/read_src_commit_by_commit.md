@@ -245,4 +245,26 @@ import xx from xxx
 
 ![image](https://user-images.githubusercontent.com/4012276/88315228-9e931480-cd48-11ea-9950-cf16cebcca09.png)
 
- 
+## refactor: use es-module-lexer	5780a2a	Evan You <yyx990803@gmail.com>	2020年4月22日 下午1:32
+
+@npm
+- `es-module-lexer` Outputs the list of exports and locations of import specifiers, including dynamic import and import meta handling.
+
+`es-module-lexer` 通过编译成 native 代码提速，也比 babel 轻量一点，vite 只需要 import 部分的代码
+
+## add some caching	ef95a00	Evan You <yyx990803@gmail.com>	2020年4月22日 下午3:09
+
+@npm
+- `koa-conditional-get` `koa-etag` 一起使用，通过 ETag 响应和 If-None-Match 请求做 HTTP 缓存
+
+读文件流加上缓存，代码实现 lastModified
+
+## more aggressive vue compilation caching	f6ef1b1	Evan You <yyx990803@gmail.com>	2020年4月22日 下午4:04
+
+vue 编译缓存，检测到文件修改，移除 vue 编译相应缓存
+
+## feat: hmr propagation	6e66766	Evan You <yyx990803@gmail.com>	2020年4月23日 上午9:30
+
+rewriteImport 作为入口，建立两个map，分别是 <importer, importee> 和 <importee， importer>，方便后面一个 importee 修改了，递归对应 importer 来判断是否要 full reload，目前如果往上递归找到一个没有被依赖的资源，那么 full reload，可以理解成，如果一个依赖树被砍掉一部分，则 full resolve
+
+
