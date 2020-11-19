@@ -1,6 +1,6 @@
 ## map 依赖响应粒度
 
-···
+```
 // in store
 @observable private map = observable.map(); 
 ...
@@ -15,6 +15,4 @@ const Comp = () => {
 const Comp = () => {
   map.get('name'); // rerender
 }
-
-
-···
+```
