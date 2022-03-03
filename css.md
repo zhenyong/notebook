@@ -27,3 +27,7 @@ padding-top/padding-bottom 设置百分比是根据宽度的，所以设置元�
 [css - Flexbox column align self to bottom - Stack Overflow](https://stackoverflow.com/questions/24697267/flexbox-column-align-self-to-bottom#answer-35125244)
 
 给置底元素加上 `margin-top: auto;`
+
+### flex:1 元素作为容器，无法垂直滚动
+
+https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size#36247448[html - Why don't flex items shrink past content size? - Stack Overflow](https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size#36247448)
