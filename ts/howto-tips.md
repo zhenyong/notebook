@@ -37,8 +37,19 @@ export type Prop<T> = { new (...args: any[]): T & object }
 ```
 {primitive type} & object will be never type
 
+## How to define the type of this inside a method
 
+```ts
+type A ={
+  [key: string]: (this: {name:string}) => void
+}
 
+const a = { 
+  say(){
+    console.log(this.name)
+  }
+}
+```
 
 
 
