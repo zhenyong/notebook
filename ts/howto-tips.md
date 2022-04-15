@@ -30,7 +30,7 @@ interface Dog extends Flatten<typeof Animal> {}
 // but required in type 'Flattern<typeof Animal>'.(2741)
 const dogA: Dog = {prototype: Animal} 
 ```
-## How to ensure that the generic type is an Class type and not a primitive type
+## How to ensure that the generic type is an Class (Object) type and not a primitive type
 
 ```ts
 export type Prop<T> = { new (...args: any[]): T & object }
