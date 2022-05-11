@@ -51,6 +51,16 @@ const a = {
 }
 ```
 
+## How to get the constructor type of a class
+
+```ts
+interface ComponentConstructor<This = Component> {
+  new (): This
+}
+```
+
+[wip: mixins · vuejs/core@3a7d11c](https://github.com/vuejs/core/commit/3a7d11ca153ba84bb2f0bae430b6c79224b3f9d4#diff-d011753005cf797f7f183dce1b0c7fb9cdd6597a70981f02b05b130fe645b65d)
+
 
 
 
