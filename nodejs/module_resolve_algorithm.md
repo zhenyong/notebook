@@ -52,10 +52,10 @@ NODE_MODULES_PATHS(START)
 2. let I = count of PARTS - 1
 3. let DIRS = []
 4. while I >= 0,
-   a. if PARTS[I] = "node_modules" CONTINUE
-   b. DIR = path join(PARTS[0 .. I] + "node_modules")
-   c. DIRS = DIR + DIRS
-   d. let I = I - 1
+   1. if PARTS[I] = "node_modules" CONTINUE
+   2. DIR = path join(PARTS[0 .. I] + "node_modules")
+   3. DIRS = DIR + DIRS
+   4. let I = I - 1
 5. return DIRS + GLOBAL_FOLDERS
 
 LOAD_PACKAGE_IMPORTS(X, DIR)
