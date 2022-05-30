@@ -3,16 +3,16 @@
 
 在路径 Y 的模块内 require(X):
 1. 如果 X 是内置模块,
-   a. 返回内置模块
-   b. 结束
+   1. 返回内置模块
+   2. 结束
 2. 如果 X 以 '/' 开头
-   a. 设置 Y = 根目录
+   - 设置 Y = 根目录
 3. 如果 X 以 './' 或者 '/' 或者 '../' 开头
-   a. LOAD_AS_FILE(Y + X)
-   b. LOAD_AS_DIRECTORY(Y + X)
-   c. 抛出错误 "not found"
+   1. LOAD_AS_FILE(Y + X)
+   2. LOAD_AS_DIRECTORY(Y + X)
+   3. 抛出错误 "not found"
 4. 如果 X 以 '#' 开头
-   a. LOAD_PACKAGE_IMPORTS(X, dirname(Y))
+   - LOAD_PACKAGE_IMPORTS(X, dirname(Y))
 5. LOAD_PACKAGE_SELF(X, dirname(Y))
 6. LOAD_NODE_MODULES(X, dirname(Y))
 7. THROW "not found"
@@ -30,20 +30,20 @@ LOAD_INDEX(X)
 
 LOAD_AS_DIRECTORY(X)
 1. 如果有 X/package.json 文件
-   a. 解析 X/package.json, 找到 "main" 字段。
-   b. 如果 "main" 是一个布尔假的值, GOTO 2.
-   c. let M = X + (main 字段)
-   d. LOAD_AS_FILE(M)
-   e. LOAD_INDEX(M)
-   f. 抛错误 "not found"
+   1. 解析 X/package.json, 找到 "main" 字段。
+   2. 如果 "main" 是一个布尔假的值, GOTO 2.
+   3. let M = X + (main 字段)
+   4. LOAD_AS_FILE(M)
+   5. LOAD_INDEX(M)
+   6. 抛错误 "not found"
 2. LOAD_INDEX(X)
 
 LOAD_NODE_MODULES(X, START)
 1. let DIRS = NODE_MODULES_PATHS(START)
 2. for each DIR in DIRS:
-   a. LOAD_PACKAGE_EXPORTS(X, DIR)
-   b. LOAD_AS_FILE(DIR/X)
-   c. LOAD_AS_DIRECTORY(DIR/X)
+   1. LOAD_PACKAGE_EXPORTS(X, DIR)
+   2. LOAD_AS_FILE(DIR/X)
+   3. LOAD_AS_DIRECTORY(DIR/X)
 
 // 从一个目录开始从下往上寻找所有存在 node_modules 子目录的情况，
 // 优先级：从近到远的所有 node_modules 目录，加上全局 node_modules 目录
@@ -89,8 +89,8 @@ RESOLVE_ESM_MATCH(MATCH)
 1. let { RESOLVED, EXACT } = MATCH
 2. let RESOLVED_PATH = fileURLToPath(RESOLVED)
 3. 如果 EXACT 为 true,
-   a. 如果 RESOLVED_PATH 路径对应文件存在, 按照文件本身格式加载。结束
+   - 如果 RESOLVED_PATH 路径对应文件存在, 按照文件本身格式加载。结束
 4. 否则
-   a. LOAD_AS_FILE(RESOLVED_PATH)
-   b. LOAD_AS_DIRECTORY(RESOLVED_PATH)
+   1. LOAD_AS_FILE(RESOLVED_PATH)
+   2. LOAD_AS_DIRECTORY(RESOLVED_PATH)
 5. 抛出错误 "not found"
