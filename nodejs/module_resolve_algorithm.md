@@ -2,7 +2,7 @@
 
 > [Modules: Packages | Node.js v18.2.0 Documentation](https://nodejs.org/api/packages.html)
 
-在路径 Y 的模块内 require(X):
+## 在路径 Y 的模块内 require(X):
 1. 如果 X 是内置模块,
    1. 返回内置模块
    2. 结束
@@ -18,18 +18,18 @@
 6. LOAD_NODE_MODULES(X, dirname(Y))
 7. THROW "not found"
 
-LOAD_AS_FILE(X)
+## LOAD_AS_FILE(X)
 1. 如果 X 是一个文件，以它本身的文件格式加载。结束
 2. 如果 X.js 是一个文件，加载 X.js 作为 JS 代码。结束
 3. 如果 X.json 是一个文件，解析 X.json 为 JS 对象。结束
 4. 如果 X.node是一个文件，则将X.node作为二进制插件加载。 结束
 
-LOAD_INDEX(X)
+## LOAD_INDEX(X)
 1. 如果 X/index.js 是一个文件, 加载 X/index.js 作为 JS 代码。结束
 2. 如果 X/index.json 是一个文件，解析 X/index.json 为 JS 对象。结束
 3. 如果 X/index.node是一个文件，则将X/index.node作为二进制插件加载。 结束
 
-LOAD_AS_DIRECTORY(X)
+## LOAD_AS_DIRECTORY(X)
 1. 如果有 X/package.json 文件
    1. 解析 X/package.json, 找到 "main" 字段。
    2. 如果 "main" 是一个布尔假的值, GOTO 2.
@@ -39,16 +39,18 @@ LOAD_AS_DIRECTORY(X)
    6. 抛错误 "not found"
 2. LOAD_INDEX(X)
 
-LOAD_NODE_MODULES(X, START)
+## LOAD_NODE_MODULES(X, START)
 1. let DIRS = NODE_MODULES_PATHS(START)
 2. for each DIR in DIRS:
    1. LOAD_PACKAGE_EXPORTS(X, DIR)
    2. LOAD_AS_FILE(DIR/X)
    3. LOAD_AS_DIRECTORY(DIR/X)
 
+## NODE_MODULES_PATHS(START)
+
 // 从一个目录开始从下往上寻找所有存在 node_modules 子目录的情况，
 // 优先级：从近到远的所有 node_modules 目录，加上全局 node_modules 目录
-NODE_MODULES_PATHS(START)
+
 1. let PARTS = path split(START)
 2. let I = count of PARTS - 1
 3. let DIRS = []
@@ -67,7 +69,7 @@ LOAD_PACKAGE_IMPORTS(X, DIR)
   ["node", "require"]) ESM 包解析器定义的.
 5. RESOLVE_ESM_MATCH(MATCH).
 
-LOAD_PACKAGE_EXPORTS(X, DIR)
+## LOAD_PACKAGE_EXPORTS(X, DIR)
 1. 尝试把 X 当作是 NAME/子路径，其中 NAME 是带有 @scope/ 前缀的，子路径就是后面 / 开头的。
 2. 如果 X 匹配不到这种模式，或者 DIR/NAME/package.json 不存在，
    return。
@@ -77,7 +79,7 @@ LOAD_PACKAGE_EXPORTS(X, DIR)
    `package.json` "exports", ["node", "require"]) ESM 包解析器定义的。
 6. RESOLVE_ESM_MATCH(MATCH)
 
-LOAD_PACKAGE_SELF(X, DIR)
+## LOAD_PACKAGE_SELF(X, DIR)
 1. 从目录 DIR 开始找到最近的包目录 SCOPE
 2. 如果没找到, return.
 3. 如果 SCOPE/package.json 的 "exports" 是空，return。
@@ -86,7 +88,7 @@ LOAD_PACKAGE_SELF(X, DIR)
    "." + X.slice("name".length), `package.json` "exports", ["node", "require"])，ESM 包解析器定义的参数.
 6. RESOLVE_ESM_MATCH(MATCH)
 
-RESOLVE_ESM_MATCH(MATCH)
+## RESOLVE_ESM_MATCH(MATCH)
 1. let { RESOLVED, EXACT } = MATCH
 2. let RESOLVED_PATH = fileURLToPath(RESOLVED)
 3. 如果 EXACT 为 true,
