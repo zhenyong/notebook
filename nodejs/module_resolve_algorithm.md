@@ -16,7 +16,7 @@
    - LOAD_PACKAGE_IMPORTS(X, dirname(Y))
 5. LOAD_PACKAGE_SELF(X, dirname(Y))
 6. LOAD_NODE_MODULES(X, dirname(Y))
-7. THROW "not found"
+7. 抛错 "not found"
 
 ## LOAD_AS_FILE(X)
 1. 如果 X 是一个文件，以它本身的文件格式加载。结束
@@ -49,6 +49,7 @@
 ## NODE_MODULES_PATHS(START)
 
 // 从一个目录开始从下往上寻找所有存在 node_modules 子目录的情况，
+
 // 优先级：从近到远的所有 node_modules 目录，加上全局 node_modules 目录
 
 1. let PARTS = path split(START)
@@ -61,7 +62,7 @@
    4. let I = I - 1
 5. return DIRS + GLOBAL_FOLDERS
 
-LOAD_PACKAGE_IMPORTS(X, DIR)
+##LOAD_PACKAGE_IMPORTS(X, DIR)
 1. 从目录 DIR 开始找到最近的包目录 SCOPE
 2. 如果没找到, return.
 3. 如果 SCOPE/package.json 的 "imports" 是空，return。
